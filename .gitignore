@@ -1,3 +1,6 @@
+*.exa
+*.sty
+*.pdf
 test/
 
 # https://github.com/github/gitignore/blob/3bb7b4b767f3f8df07e362dfa03c8bd425f16d32/TeX.gitignore

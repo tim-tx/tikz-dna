@@ -1,41 +1,60 @@
-\input ydocstrip.tex
+%%
+%% tikz-dna.ins
+%%
+%% Copyright © 2021 by Timothy S. Jones
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%%
+%% The Current Maintainer of this work is Timothy S. Jones.
+%%
+%% This work consists of the files tikz-dna.dtx and tikz-dna.ins
+%% and the derived file tikz-dna.sty.
+%%
+
+\input docstrip.tex
 \keepsilent
 \askforoverwritefalse
 
-\generate{%
-  \file{tikz-dna.sty}{\from{tikz-dna.dtx}{tikz-dna.sty}}%
-  \file{tikz-dna-arrows.sty}{\from{tikz-dna.dtx}{tikz-dna-arrows.sty}}%
-  \file{tikz-dna-either.sty}{\from{tikz-dna.dtx}{tikz-dna-either.sty}}%
-  \file{tikz-dna-overlays.sty}{\from{tikz-dna.dtx}{tikz-dna-overlays.sty}}%
-  \file{tikz-dna-clockarrows.sty}{\from{tikz-dna.dtx}{tikz-dna-clockarrows.sty}}%
-  \file{tikz-dna-columntype.sty}{\from{tikz-dna.dtx}{tikz-dna-columntype.sty}}%
-  \file{tikz-dna-nicetabs.sty}{\from{tikz-dna.dtx}{tikz-dna-nicetabs.sty}}%
-  \file{tikz-dna-counters.sty}{\from{tikz-dna.dtx}{tikz-dna-counters.sty}}%
-  \file{tikz-dna-advnodes.sty}{\from{tikz-dna.dtx}{tikz-dna-advnodes.sty}}%
-  \file{tikz-dna-interval.sty}{\from{tikz-dna.dtx}{tikz-dna-interval.sty}}%
-  \file{tikz-dna-beamer.sty}{\from{tikz-dna.dtx}{tikz-dna-beamer.sty}}%
-  \file{tikz-dna-ifsym.sty}{\from{tikz-dna.dtx}{tikz-dna-ifsym.sty}}%
-%  \file{tikz-dna-examplecode.sty}{\from{tikz-dna.dtx}{tikz-dna-examplecode.sty}}%
-}
+\usedir{tex/latex/tikz-dna}
+
+\preamble
+
+Copyright © 2021 by Timothy S. Jones
+
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License, either version 1.3
+of this license or (at your option) any later version.
+The latest version of this license is in
+  http://www.latex-project.org/lppl.txt
+and version 1.3 or later is part of all distributions of LaTeX
+version 2005/12/01 or later.
+
+This work has the LPPL maintenance status `maintained'.
+
+The Current Maintainer of this work is Timothy S. Jones.
+
+This work consists of the files tikz-dna.dtx and tikz-dna.ins
+and the derived file tikz-dna.sty.
+
+\endpreamble
+
+\generate{\file{tikz-dna.sty}{\from{tikz-dna.dtx}{package}}}
 
 \obeyspaces
 \Msg{*************************************************************}
 \Msg{*                                                           *}
 \Msg{* To finish the installation you have to move the following *}
-\Msg{* files into a directory searched by TeX:                   *}
+\Msg{* file into a directory searched by TeX:                    *}
 \Msg{*                                                           *}
 \Msg{*     tikz-dna.sty                                          *}
-\Msg{*     tikz-dna-arrows.sty                                   *}
-\Msg{*     tikz-dna-either.sty                                   *}
-\Msg{*     tikz-dna-overlays.sty                                 *}
-\Msg{*     tikz-dna-clockarrows.sty                              *}
-\Msg{*     tikz-dna-columntype.sty                               *}
-\Msg{*     tikz-dna-nicetabs.sty                                 *}
-\Msg{*     tikz-dna-counters.sty                                 *}
-\Msg{*     tikz-dna-advnodes.sty                                 *}
-\Msg{*     tikz-dna-interval.sty                                 *}
-\Msg{*     tikz-dna-beamer.sty                                   *}
-\Msg{*     tikz-dna-ifsym.sty                                    *}
 \Msg{*                                                           *}
 \Msg{* To produce the documentation run the file tikz-dna.dtx    *}
 \Msg{* through LaTeX.                                            *}

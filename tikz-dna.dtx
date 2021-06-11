@@ -30,10 +30,12 @@
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
+\usepackage{hypdoc}
 \usepackage{tikz-dna}[2021/06/05]
 \usepackage{xspace}
 \def\tikzname{Ti\emph{k}Z\xspace}
 \def\eg{e\@.g\@.\xspace}
+\def\mybreak{\\[\baselineskip]}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -86,17 +88,38 @@
 %
 % \maketitle
 %
+% \tableofcontents
+%
 % \section{Introduction}
 %
 % Put text here.
 %
 % \begin{tikzpicture}
-% \dna [] at (0,0) {[][blue]HLHL};
+%   \dna [] at (0,0) {[]HLHL};
 % \end{tikzpicture}
 %
 % \StopEventually{}
 %
 % \section{Implementation}
+%
+% The parsing sequence (with some recursion) goes roughly like:
+%
+% \begin{verbatim}
+% \dna
+% \tikz@dna
+% \tikz@dna@
+% \tikz@dna@at
+% \tikz@dna@@@
+% \tikz@dna@@@init
+% \tikzdna@parser
+% \tikzdna@testfornum
+% \tikzdna@testfornum@
+% \tikzdna@testfornum@@
+% \tikzdna@testfornum@@@
+% \tikzdna@testfornum@@@@
+% \tikzdna@testforcode
+% \tikzdna@parser@
+% \end{verbatim}
 %
 % \subsection{Required packages}
 %
@@ -104,13 +127,16 @@
 \RequirePackage{tikz}
 \usetikzlibrary{calc}
 \RequirePackage{unravel}
+\unravelsetup{max-action=500,max-input=500,max-output=500}
 %    \end{macrocode}
 %
-% \subsection{User-level macros}
+% \subsection{Top-level handlers}
 %
-% \begin{macro}{\textdna}[2]{Optional initial character}{Timing characters}
-%   This macro now only parses it optional argument to check if it is a initial
-%   character or some style settings and then calls \cs{dna} appropriately.
+% \begin{macro}{\textdna}
+%   Creates an inline diagram. This macro only parses its optional argument
+%   to check if it is a initial character or \tikzname keys and then calls
+%   \cs{dna} appropriately.
+%   \mybreak Usage: \cs{textdna} \oarg{initial character or TikZ keys} \marg{sequence characters}
 %    \begin{macrocode}
 \DeclareRobustCommand*\textdna[2][]{%
   \begingroup
@@ -150,43 +176,6 @@
   \global\let\tikzdna@namednodes\empty
 }
 \let\tikzdna@namednodes\empty
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@init}
-%   General definitions before drawing.
-%    \begin{macrocode}
-\def\tikzdna@init{%
-  \def\tikzdna@lastchar{@}%
-  \def\tikzdna@num{0}%
-  \let\tikzdna@currentchar\empty
-  \let\tikzdna@settings\empty
-  \let\tikzdna@fromchar\empty
-  \let\tikzdna@tochar\empty
-  \let\setwscale\tikzdnasetwscale
-  \def\wscale{\tikzdna@wscale}%
-  \let\xunit\tikzdna@xunit
-  \let\yunit\tikzdna@yunit
-  \def\slope{\dnaslope}%
-  \def\lslope{\dnaslope}%
-  \def\zslope{\dnazslope}%
-  \def\dslope{\dnadslope}%
-  \gdef\tikzdna@saved@settings{}%
-  \gdef\tikzdna@saved@options{}%
-  \gdef\tikzdna@oldnodecenter@{}%
-  \def\tikzdnawidth{0.0}%
-  \setcounter{tikzdnatrans}{-1}%
-  \setcounter{tikzdnatranspos}{0}%
-  \tikzdna@initstr{%
-    \useasboundingbox (0,0) rectangle (\tikzdnawidth,\dnaheight);
-    \draw [dna/every char] (0,0)
-    coordinate (dna@refa)
-    coordinate (dna@ref)  at (0,\dnaheight/2)
-    coordinate (dna@refb) at (0,\dnaheight)
-    coordinate (dna/start)
-    coordinate (dna/start base)
-  }%
-}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -234,7 +223,7 @@
 % 
 % \begin{macro}{\tikz@dna@at}
 %   A proxy to \cs{tikz@dna@@@}. The second argument is in anticipation of a space between |at| and the coordinate.
-%   \\[\baselineskip]Usage: \cs{tikz@dna@at} \meta{optional TikZ keys} |at| \meta{anything} \parg{coordinate}
+%   \mybreak Usage: \cs{tikz@dna@at} \meta{optional TikZ keys} |at| \meta{anything} \parg{coordinate}
 %    \begin{macrocode}
 \def\tikz@dna@at#1at#2(#3){%
   \tikz@dna@@@{#1}{#2(#3)}%
@@ -255,10 +244,12 @@
 % Check if the sequence characters are preceeded by an initial character, \eg |[P]P|.
 % Pass an empty list if |[]| if no initial character is present.
 %    \begin{macrocode}
+    % \unravel{
     \@ifnextchar{[}%
     {\tikz@dna@@@init}%
     {\tikz@dna@@@init[]}%
     #3\relax
+    % }
     \tikzset{dna/before}%
     \tikzdna@str;%
     \path let \p1 = (dna/end top), \p2 = (dna/end base),
@@ -280,6 +271,43 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\tikzdna@init}
+%   General definitions before drawing.
+%    \begin{macrocode}
+\def\tikzdna@init{%
+  \def\tikzdna@lastchar{@}%
+  \def\tikzdna@num{0}%
+  \let\tikzdna@currentchar\empty
+  \let\tikzdna@settings\empty
+  \let\tikzdna@fromchar\empty
+  \let\tikzdna@tochar\empty
+  \let\setwscale\tikzdnasetwscale
+  \def\wscale{\tikzdna@wscale}%
+  \let\xunit\tikzdna@xunit
+  \let\yunit\tikzdna@yunit
+  \def\slope{\dnaslope}%
+  \def\lslope{\dnaslope}%
+  \def\zslope{\dnazslope}%
+  \def\dslope{\dnadslope}%
+  \gdef\tikzdna@saved@settings{}%
+  \gdef\tikzdna@saved@options{}%
+  \gdef\tikzdna@oldnodecenter@{}%
+  \def\tikzdnawidth{0.0}%
+  \setcounter{tikzdnatrans}{-1}%
+  \setcounter{tikzdnatranspos}{0}%
+  \tikzdna@initstr{%
+    \useasboundingbox (0,0) rectangle (\tikzdnawidth,\dnaheight);
+    \draw [dna/every char] (0,0)
+    coordinate (dna@refa)
+    coordinate (dna@ref)  at (0,\dnaheight/2)
+    coordinate (dna@refb) at (0,\dnaheight)
+    coordinate (dna/start)
+    coordinate (dna/start base)
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\tikz@dna@@@end}
 %   Gobble trailing |;| or print error if absent.
 %    \begin{macrocode}
@@ -296,14 +324,14 @@
 %   of parsing an initial character, \eg |[P]P|, and finally triggers the parsing
 %   of the sequence characters.
 %^^A BUG this is probably not needed for tikz-dna. There will be no initial position.
-%   \\[\baselineskip]Usage: \cs{tikz@dna@@@init} \oarg{initial character}
+%   \mybreak Usage: \cs{tikz@dna@@@init} \oarg{initial character}
 %    \begin{macrocode}
 \def\tikz@dna@@@init[#1]{%
   \begingroup
 %    \end{macrocode}
 % If |#1| is empty or |\relax|, do nothing. Otherwise, make |#1| uppercase and save the
-% result in |\tikzdna@lastchar|. See \TeX{}book exercise 7\@.8 for usage
-% of \cs{uppercase}.
+% result in |\tikzdna@lastchar|.\footnote{See \TeX{}book exercise 7\@.8 for usage
+% of \cs{uppercase}.}
 %    \begin{macrocode}
   \ifx\relax#1\relax\else
   \uppercase{\def\tikzdna@lastchar{#1}}%
@@ -325,6 +353,371 @@
   {\PackageWarning{tikz-dna}{Start value for sequence character
       '\tikzdna@lastchar' is not defined and will be ignored!}{}{}{}}%
   \fi
+  \tikzdna@parser
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Parser}
+%
+% \begin{macro}{\tikzdna@parser}
+%   Top-level handler for parsing a sequence specification. If the next character
+%   is \cs{relax}, begin conclusion, otherwise begin parsing chain, checking
+%   for numbers, control characters, and code before a standard sequence character.
+%   Note that \cs{@ifnextchar} sets \cs{@let@token} which used elsewhere.\footnote{See
+%   |source2e| for the definition of \cs{@ifnextchar}.}
+%    \begin{macrocode}
+\def\tikzdna@parser{%
+  \@ifnextchar\relax
+  {\tikzdna@parser@end}%
+  {\tikzdna@testfornum}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@parser@end}
+%    \begin{macrocode}
+\def\tikzdna@parser@end{%
+  \def\tikzdna@output@nextchar{@}%
+  \let\tikzdna@fromchar\tikzdna@tochar
+  \edef\tikzdna@tochar{@}%
+  \tikzdna@output@flush
+  \global\let\tikzdnawidth\tikzdnawidth
+  \tikzdna@addtostr{ coordinate (dna/end)
+    let \p1 = (dna/start base), \p2 = (dna/end), \p3 = (0,1) in
+    coordinate (dna/end base) at (\x2,\y1)
+    coordinate (dna/end top)  at (\x2,\y1+\y3)
+  }%
+  \endgroup
+  \tikzdna@endhook%
+}
+\let\tikzdna@endhook\relax
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@parser@}[1]{Next Character}
+%^^A KLUDGE
+%   Not a control character, not a number, not code. This is the juicy part. Unravel to 1693.
+%    \begin{macrocode}
+\def\tikzdna@parser@#1{%
+%    \end{macrocode}
+% Stop if there ar no more characters.
+%    \begin{macrocode}
+  \ifx\relax#1\empty
+  \expandafter\tikzdna@parser@end
+%    \end{macrocode}
+% Otherwise, pick the first or second argument based on whether |#1| is an alphabetic character.
+%    \begin{macrocode}
+  \else
+  \tikzdna@iflower{#1}%
+  {\tikzdna@setnum{\tikzdna@num/2}}%
+  {}%
+  \ifx\tikzdna@back\empty\else
+  \tikzdna@setnum{\tikzdna@num - \tikzdna@back}%
+  \global\let\tikzdna@back\empty
+  \fi
+%    \end{macrocode}
+%^^A KLUDGE
+% Current position?
+%    \begin{macrocode}
+  \pgfmathparse{\tikzdnawidth + \tikzdna@num}%
+  \global\let\tikzdnawidth\pgfmathresult
+  \uppercase{\gdef\tikzdna@currentchar{#1}}%
+%    \end{macrocode}
+%^^A KLUDGE
+% Special case transitions, e.g. H->L? \cs{tikzdna@lastchar} will generally be |@|.
+%    \begin{macrocode}
+  \@nameuse{tikzdna@beforenextcode@\tikzdna@lastchar}%
+%    \end{macrocode}
+%^^A KLUDGE
+% Things to be executed before this sequence character. No such control sequences
+% are defined in this document. Unravel 1704.
+%    \begin{macrocode}
+  \@nameuse{tikzdna@beforecode@\tikzdna@currentchar}%
+  \tikzdna@output{\tikzdna@lastchar}{\tikzdna@currentchar}%
+%    \end{macrocode}
+%^^A KLUDGE
+% Unravel 1744.
+%    \begin{macrocode}
+  \global\let\tikzdna@lastchar\tikzdna@currentchar
+%    \end{macrocode}
+% Things to be executed after this sequence character.
+%    \begin{macrocode}
+  \@nameuse{tikzdna@aftercode@\tikzdna@currentchar}%
+%    \end{macrocode}
+% Save lowercased \cs{tikzdna@currentchar} as \cs{@tempa}.
+%    \begin{macrocode}
+  \expandafter\lowercase\expandafter{%
+    \expandafter\def\expandafter\@tempa
+    \expandafter{\tikzdna@currentchar}%
+  }%
+%    \end{macrocode}
+%^^A KLUDGE
+% What is |@cmd|?
+%    \begin{macrocode}
+  \pgfkeysifdefined{/tikz/dna/\@tempa/text/.@cmd}%
+  {\expandafter\expandafter\expandafter\tikzdna@testfortext}%
+%    \end{macrocode}
+% Parse next character.
+%    \begin{macrocode}
+  {\expandafter\expandafter\expandafter\tikzdna@parser}%
+  \fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Text}
+%
+% \begin{macro}{\tikzdna@testfortext}
+%    \begin{macrocode}
+\def\tikzdna@testfortext{%
+  \@ifnextchar\bgroup
+  {\tikzdna@handletext}%
+  {\tikzdna@parser}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@handletext}[1]{Text}
+%   Looks ahead if the current character is the last one and sets the end-of-line
+%   marker if so.
+%
+%   This seems outdated because |handletext@| does not flush the output any more.
+%    \begin{macrocode}
+\def\tikzdna@handletext#1{%
+  \@ifnextchar\relax
+  {\def\tikzdna@output@nextchar{@}\tikzdna@handletext@{#1}}%
+  {\def\tikzdna@output@nextchar{Z}\tikzdna@handletext@{#1}}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@handletext@}[1]{Text}
+%    \begin{macrocode}
+\def\tikzdna@handletext@#1{%
+  \@ifnextchar{[}%
+  {\tikzdna@handletext@@}%
+  {\tikzdna@handletext@@[]}%
+  #1\tikzdna@endoftext
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@handletext@@}[2]{Optional Settings}{Text}
+%    \begin{macrocode}
+\def\tikzdna@handletext@@[#1]#2\tikzdna@endoftext{%
+  \@ifnextchar{\relax}%
+  {\def\tikzdna@output@nextchar{@}%
+    \tikzdna@handletext@@@{#1}{#2}}%
+  {\tikzdna@handletext@@@{#1}{#2}}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@handletext@@@}[2]{Optional Settings}
+%   {Text}
+%    \begin{macrocode}
+\def\tikzdna@handletext@@@#1#2{%
+  \expandafter\lowercase\expandafter{%
+    \expandafter\def\expandafter\@tempa
+    \expandafter{\tikzdna@currentchar}%
+  }%
+  \edef\@tempa{node [dna/\@tempa/text,}%
+  \expandafter\tikzdna@output@addcode\expandafter{%
+    \@tempa
+    #1] at ($ (dna@dstart) !.5! (dna@dend) $)
+    {\tikzdna@textformat{#2}}
+  }%
+  \ifcase0%
+  \if @\tikzdna@output@bufchara
+  1%
+  \else
+  \ifx\tikzdna@output@bufchara\tikzdna@currentchar
+  1%
+  \fi
+  \fi
+  \relax
+  \else
+  \fi
+  \xdef\tikzdna@output@bufcharb{\tikzdna@currentchar @edge@}%
+  \xdef\tikzdna@lastchar{\tikzdna@currentchar @edge@}%
+  \tikzdna@parser
+}
+\let\tikzdna@textformat\empty
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Numbers}
+%
+% \begin{macro}{\tikzdna@testfornum}
+%   Begin parsing a number.
+%    \begin{macrocode}
+\def\tikzdna@testfornum{%
+  \global\let\tikzdna@num\tikzdna@wscale
+  \let\tikzdna@numchars\empty
+  \tikzdna@numfrac0\relax
+  \afterassignment
+  \tikzdna@testfornum@
+  \tikzdna@numint0%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@testfornumfrac}
+%    \begin{macrocode}
+\def\tikzdna@testfornumfrac{%
+  \afterassignment
+  \tikzdna@testfornum@@@
+  \tikzdna@numfrac1%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@testfornum@}
+%   The \cs{@let@token} set in \cs{tikzdna@parser} is used to handle |0|
+%   which cannot be detected using the \cs{tikzdna@numint} value.
+%    \begin{macrocode}
+\def\tikzdna@testfornum@{%
+  \ifx0\@let@token
+  \let\tikzdna@next\tikzdna@testfornum@@
+  \else
+  \ifnum0<\tikzdna@numint
+  \let\tikzdna@next\tikzdna@testfornum@@
+  \else
+  \def\tikzdna@next{%
+    \@ifnextchar{.}%
+    {\expandafter\tikzdna@testfornumfrac\@gobble}%
+    {%
+      \tikzdna@numint1\relax
+      \tikzdna@numfrac0\relax
+      \global\let\tikzdna@num\tikzdna@wscale
+      \if@tikzdna@metachar
+      {\def\@tempa{\expandafter\expandafter\expandafter
+          \tikzdna@parser
+          \csname tikzdna@metachar@\meaning\@let@token\endcsname{1}}%
+        \expandafter\@tempa\@gobble
+      }%
+      {\tikzdna@testforcode}%
+    }%
+  }%
+  \fi\fi
+  \tikzdna@next
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@testfornum@@}
+%    \begin{macrocode}
+\def\tikzdna@testfornum@@{%
+  \@ifnextchar{.}%
+  {\expandafter\tikzdna@testfornumfrac\@gobble}%
+  {\tikzdna@testfornum@@@}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@testfornum@@@}
+%    \begin{macrocode}
+\def\tikzdna@testfornum@@@{%
+  \edef\tikzdna@num{\the\tikzdna@numint.\expandafter\@gobble\the\tikzdna@numfrac}%
+  \tikzdna@setnum{\tikzdna@wscale * \tikzdna@num}%
+  \@ifnextchar\bgroup
+  {%
+    \expandafter\tikzdna@numfrac\expandafter0\expandafter
+    \@gobble\the\tikzdna@numfrac\relax
+    \ifnum0=\tikzdna@numfrac\else
+    \pgfmathparse{round(\tikzdna@num)}%
+    \PackageWarning{tikz-dna}%
+    {Can not repeat group by a non-integer factor!^^J%
+      Rounding '\tikzdna@num' to '\pgfmathresult'.}{}{}{}%
+    \global\let\tikzdna@num\pgfmathresult
+    \fi
+    \tikzdna@testfornum@@@@
+  }%
+  {%
+    \if@tikzdna@metachar
+    {\def\@tempa{\expandafter\expandafter\expandafter
+        \tikzdna@parser
+        \csname tikzdna@metachar@\meaning\@let@token\expandafter\endcsname
+        \expandafter{\tikzdna@num}}%
+      \expandafter\@tempa\@gobble
+    }%
+    {\tikzdna@testforcode}%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@testfornum@@@@}[1]{Characters and other tokens to
+%   repeat}
+%    \begin{macrocode}
+\def\tikzdna@testfornum@@@@#1{%
+  \begingroup
+  \@temptokena{#1}%
+  \tikzdna@numloop%
+  \endgroup
+  \tikzdna@numint1\relax
+  \tikzdna@numfrac0\relax
+  \expandafter\tikzdna@parser\tikzdna@numchars
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@numloop}
+%    \begin{macrocode}
+\def\tikzdna@numloop{%
+  \ifnum\tikzdna@numint>0%
+  \toks@\expandafter{\tikzdna@numchars}%
+  \xdef\tikzdna@numchars{%
+    \the\toks@
+    \the\@temptokena
+  }%
+  \advance\tikzdna@numint by -1\relax
+  \expandafter\tikzdna@numloop
+  \fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Code (`!' modifier)}
+%
+% \begin{macro}{\tikzdna@testforcode}
+%    \begin{macrocode}
+\def\tikzdna@testforcode{%
+  \@ifnextchar{!}%
+  {\tikzdna@testforcode@}%
+  {\@ifundefined{tikzdna@code@\meaning\@let@token}%
+    {\tikzdna@parser@}%
+%    \end{macrocode}
+% Get the next token and then expand \cs{tikzdna@code@}\meta{next token}
+%    \begin{macrocode}
+    {\expandafter\afterassignment
+      \csname tikzdna@code@\meaning\@let@token\endcsname
+      \let\@let@token=%
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@testforcode@}[1]{Character to gobble}
+%    \begin{macrocode}
+\def\tikzdna@testforcode@#1{%
+  \@ifnextchar\bgroup
+  {\tikzdna@handlecode}%
+  {%
+    \PackageWarning{tikz-dna}{Missing braces after '!' character. Ignoring
+      this character}{}{}{}%
+    \tikzdna@parser
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@handlecode}[1]{Code to add to string}
+%    \begin{macrocode}
+\def\tikzdna@handlecode#1{%
+  \tikzdna@output@addcode{ #1 }%
   \tikzdna@parser
 }
 %    \end{macrocode}
@@ -626,16 +1019,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\tikzdna@parser}
-%    \begin{macrocode}
-\def\tikzdna@parser{%
-  \@ifnextchar\relax
-  {\tikzdna@parser@end}%
-  {\tikzdna@testfornum}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
 % \subsection{Add-to-macro macros}
 % \begin{macro}{\tikzdna@eaddto}[2]{Macro name}{Tokens to add to macro}
 %    \begin{macrocode}
@@ -891,7 +1274,7 @@
 %
 % \subsection{Output routine}
 %
-% Init buffer macros:
+% Initialize buffer macros.
 %    \begin{macrocode}
 \def\tikzdna@output@bufchara{}%
 \def\tikzdna@output@bufcharb{}%
@@ -900,7 +1283,9 @@
 \def\tikzdna@output@nextchar{}%
 %    \end{macrocode}
 %
-% \begin{macro}{\tikzdna@output}[2]{Character 1}{Character 2}
+% \begin{macro}{\tikzdna@output}
+%^^A KLUDGE
+%   Usage: \cs{tikzdna@output} \meta{previous character} \meta{current character}
 %    \begin{macrocode}
 \def\tikzdna@output#1#2{%
   \edef\tikzdna@fromchar{#1}%
@@ -1034,143 +1419,14 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{Parser}
-%
-% \begin{macro}{\tikzdna@parser@end}
-%    \begin{macrocode}
-\def\tikzdna@parser@end{%
-  \def\tikzdna@output@nextchar{@}%
-  \let\tikzdna@fromchar\tikzdna@tochar
-  \edef\tikzdna@tochar{@}%
-  \tikzdna@output@flush
-  \global\let\tikzdnawidth\tikzdnawidth
-  \tikzdna@addtostr{ coordinate (dna/end)
-    let \p1 = (dna/start base), \p2 = (dna/end), \p3 = (0,1) in
-    coordinate (dna/end base) at (\x2,\y1)
-    coordinate (dna/end top)  at (\x2,\y1+\y3)
-  }%
-  \endgroup
-  \tikzdna@endhook%
-}
-\let\tikzdna@endhook\relax
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@parser@}[1]{Next Character}
-%    \begin{macrocode}
-\def\tikzdna@parser@#1{%
-  \ifx\relax#1\empty
-  \expandafter\tikzdna@parser@end
-  \else
-  \tikzdna@iflower{#1}%
-  {\tikzdna@setnum{\tikzdna@num/2}}%
-  {}%
-  \ifx\tikzdna@back\empty\else
-  \tikzdna@setnum{\tikzdna@num - \tikzdna@back}%
-  \global\let\tikzdna@back\empty
-  \fi
-  \pgfmathparse{\tikzdnawidth + \tikzdna@num}%
-  \global\let\tikzdnawidth\pgfmathresult
-  \uppercase{\gdef\tikzdna@currentchar{#1}}%
-  \@nameuse{tikzdna@beforenextcode@\tikzdna@lastchar}%
-  \@nameuse{tikzdna@beforecode@\tikzdna@currentchar}%
-  \tikzdna@output{\tikzdna@lastchar}{\tikzdna@currentchar}%
-  \global\let\tikzdna@lastchar\tikzdna@currentchar
-  \@nameuse{tikzdna@aftercode@\tikzdna@currentchar}%
-  \expandafter\lowercase\expandafter{%
-    \expandafter\def\expandafter\@tempa
-    \expandafter{\tikzdna@currentchar}%
-  }%
-  \pgfkeysifdefined{/tikz/dna/\@tempa/text/.@cmd}%
-  {\expandafter\expandafter\expandafter\tikzdna@testfortext}%
-  {\expandafter\expandafter\expandafter\tikzdna@parser}%
-  \fi
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testfortext}
-%    \begin{macrocode}
-\def\tikzdna@testfortext{%
-  \@ifnextchar\bgroup
-  {\tikzdna@handletext}%
-  {\tikzdna@parser}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@handletext}[1]{Text}
-%   Looks ahead if the current character is the last one and sets the end-of-line
-%   marker if so.
-%
-%   This seems outdated because |handletext@| does not flush the output any more.
-%    \begin{macrocode}
-\def\tikzdna@handletext#1{%
-  \@ifnextchar\relax
-  {\def\tikzdna@output@nextchar{@}\tikzdna@handletext@{#1}}%
-  {\def\tikzdna@output@nextchar{Z}\tikzdna@handletext@{#1}}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@handletext@}[1]{Text}
-%    \begin{macrocode}
-\def\tikzdna@handletext@#1{%
-  \@ifnextchar{[}%
-  {\tikzdna@handletext@@}%
-  {\tikzdna@handletext@@[]}%
-  #1\tikzdna@endoftext
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@handletext@@}[2]{Optional Settings}{Text}
-%    \begin{macrocode}
-\def\tikzdna@handletext@@[#1]#2\tikzdna@endoftext{%
-  \@ifnextchar{\relax}%
-  {\def\tikzdna@output@nextchar{@}%
-    \tikzdna@handletext@@@{#1}{#2}}%
-  {\tikzdna@handletext@@@{#1}{#2}}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@handletext@@@}[2]{Optional Settings}
-%   {Text}
-%    \begin{macrocode}
-\def\tikzdna@handletext@@@#1#2{%
-  \expandafter\lowercase\expandafter{%
-    \expandafter\def\expandafter\@tempa
-    \expandafter{\tikzdna@currentchar}%
-  }%
-  \edef\@tempa{node [dna/\@tempa/text,}%
-  \expandafter\tikzdna@output@addcode\expandafter{%
-    \@tempa
-    #1] at ($ (dna@dstart) !.5! (dna@dend) $)
-    {\tikzdna@textformat{#2}}
-  }%
-  \ifcase0%
-  \if @\tikzdna@output@bufchara
-  1%
-  \else
-  \ifx\tikzdna@output@bufchara\tikzdna@currentchar
-  1%
-  \fi
-  \fi
-  \relax
-  \else
-  \fi
-  \xdef\tikzdna@output@bufcharb{\tikzdna@currentchar @edge@}%
-  \xdef\tikzdna@lastchar{\tikzdna@currentchar @edge@}%
-  \tikzdna@parser
-}
-\let\tikzdna@textformat\empty
-%    \end{macrocode}
-% \end{macro}
-%
 % \subsection{Definition of modifiers}
 %
-% \begin{macro}{\tikzdna@defcode}[1]{Code Character}
+% \begin{macro}{\tikzdna@defcode}
+%   Defines\footnote{See |source2e| for the definition of \cs{@namedef}.} a
+%   macro to handle a control character. |\meaning|\footnote{See chapter 20
+%   in the \TeX{}book for the meaning of \cs{meaning}.} is used to produce
+%   a valid control sequence name in the case of a special character.
+%   \mybreak Usage \cs{tikzdna@defcode} \meta{control character}
 %    \begin{macrocode}
 \def\tikzdna@defcode#1{%
   \@namedef{tikzdna@code@\meaning#1}%
@@ -1496,178 +1752,6 @@
   \def\@tempb{\tikzdna@marknodes[#1]}%
   \expandafter\@tempb\expandafter{\expandafter{\@tempa}}%
   \endgroup
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \subsection{Test for Code (`!' modifier)}
-%
-% \begin{macro}{\tikzdna@testforcode}
-%    \begin{macrocode}
-\def\tikzdna@testforcode{%
-  \@ifnextchar{!}%
-  {\tikzdna@testforcode@}%
-  {\@ifundefined{tikzdna@code@\meaning\@let@token}%
-    {\tikzdna@parser@}%
-    {\expandafter\afterassignment
-      \csname tikzdna@code@\meaning\@let@token\endcsname
-      \let\@let@token=%
-    }%
-  }%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testforcode@}[1]{Character to gobble}
-%    \begin{macrocode}
-\def\tikzdna@testforcode@#1{%
-  \@ifnextchar\bgroup
-  {\tikzdna@handlecode}%
-  {%
-    \PackageWarning{tikz-dna}{Missing braces after '!' character. Ignoring
-      this character}{}{}{}%
-    \tikzdna@parser
-  }%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@handlecode}[1]{Code to add to string}
-%    \begin{macrocode}
-\def\tikzdna@handlecode#1{%
-  \tikzdna@output@addcode{ #1 }%
-  \tikzdna@parser
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \subsection{Parser macros: numbers}
-%
-% \begin{macro}{\tikzdna@testfornum}
-%    \begin{macrocode}
-\def\tikzdna@testfornum{%
-  \global\let\tikzdna@num\tikzdna@wscale
-  \let\tikzdna@numchars\empty
-  \tikzdna@numfrac0\relax
-  \afterassignment
-  \tikzdna@testfornum@
-  \tikzdna@numint0%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testfornumfrac}
-%    \begin{macrocode}
-\def\tikzdna@testfornumfrac{%
-  \afterassignment
-  \tikzdna@testfornum@@@
-  \tikzdna@numfrac1%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@numloop}
-%    \begin{macrocode}
-\def\tikzdna@numloop{%
-  \ifnum\tikzdna@numint>0%
-  \toks@\expandafter{\tikzdna@numchars}%
-  \xdef\tikzdna@numchars{%
-    \the\toks@
-    \the\@temptokena
-  }%
-  \advance\tikzdna@numint by -1\relax
-  \expandafter\tikzdna@numloop
-  \fi
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testfornum@}
-%   The \cs{@let@token} set in \cs{tikzdna@parser} is used to handle "0"
-%   which can not be detected using the \cs{tikzdna@numint} value.
-%    \begin{macrocode}
-\def\tikzdna@testfornum@{%
-  \ifx0\@let@token
-  \let\tikzdna@next\tikzdna@testfornum@@
-  \else
-  \ifnum0<\tikzdna@numint
-  \let\tikzdna@next\tikzdna@testfornum@@
-  \else
-  \def\tikzdna@next{%
-    \@ifnextchar{.}%
-    {\expandafter\tikzdna@testfornumfrac\@gobble}%
-    {%
-      \tikzdna@numint1\relax
-      \tikzdna@numfrac0\relax
-      \global\let\tikzdna@num\tikzdna@wscale
-      \if@tikzdna@metachar
-      {\def\@tempa{\expandafter\expandafter\expandafter
-          \tikzdna@parser
-          \csname tikzdna@metachar@\meaning\@let@token\endcsname{1}}%
-        \expandafter\@tempa\@gobble
-      }%
-      {\tikzdna@testforcode}%
-    }%
-  }%
-  \fi\fi
-  \tikzdna@next
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testfornum@@}
-%    \begin{macrocode}
-\def\tikzdna@testfornum@@{%
-  \@ifnextchar{.}%
-  {\expandafter\tikzdna@testfornumfrac\@gobble}%
-  {\tikzdna@testfornum@@@}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testfornum@@@}
-%    \begin{macrocode}
-\def\tikzdna@testfornum@@@{%
-  \edef\tikzdna@num{\the\tikzdna@numint.\expandafter\@gobble\the\tikzdna@numfrac}%
-  \tikzdna@setnum{\tikzdna@wscale * \tikzdna@num}%
-  \@ifnextchar\bgroup
-  {%
-    \expandafter\tikzdna@numfrac\expandafter0\expandafter
-    \@gobble\the\tikzdna@numfrac\relax
-    \ifnum0=\tikzdna@numfrac\else
-    \pgfmathparse{round(\tikzdna@num)}%
-    \PackageWarning{tikz-dna}%
-    {Can not repeat group by a non-integer factor!^^J%
-      Rounding '\tikzdna@num' to '\pgfmathresult'.}{}{}{}%
-    \global\let\tikzdna@num\pgfmathresult
-    \fi
-    \tikzdna@testfornum@@@@
-  }%
-  {%
-    \if@tikzdna@metachar
-    {\def\@tempa{\expandafter\expandafter\expandafter
-        \tikzdna@parser
-        \csname tikzdna@metachar@\meaning\@let@token\expandafter\endcsname
-        \expandafter{\tikzdna@num}}%
-      \expandafter\@tempa\@gobble
-    }%
-    {\tikzdna@testforcode}%
-  }%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdna@testfornum@@@@}[1]{Characters and other tokens to
-%   repeat}
-%    \begin{macrocode}
-\def\tikzdna@testfornum@@@@#1{%
-  \begingroup
-  \@temptokena{#1}%
-  \tikzdna@numloop%
-  \endgroup
-  \tikzdna@numint1\relax
-  \tikzdna@numfrac0\relax
-  \expandafter\tikzdna@parser\tikzdna@numchars
 }
 %    \end{macrocode}
 % \end{macro}
@@ -2204,7 +2288,10 @@
 %
 % \subsection{Other macros}
 %
-% \begin{macro}{\tikzdna@iflower}[1]{Character}
+% \begin{macro}{\tikzdna@iflower}
+%   Pick the first or second of the awaiting arguments based on whether |#1|
+%   is an alphabetic character.
+%   \mybreak Usage: \cs{tikzdna@iflower} \meta{character}
 %    \begin{macrocode}
 \def\tikzdna@iflower#1{%
   \begingroup
@@ -2287,7 +2374,39 @@
 \tikzdnasetzslope{0.05}%
 %    \end{macrocode}
 %
-% \subsection{Timing character definition macros}
+% \subsection{Sequence character definition macros}
+%
+% \begin{macro}{\tikzdnachar}
+%   Register a new sequence character. The character will be uppercased.
+%   \mybreak Usage: \cs{tikzdnachar} \meta{character}
+%    \begin{macrocode}
+\def\tikzdnachar#1{%
+  \uppercase{%
+    \tikzdna@addchar{#1}%
+    \tikzdnachar@{#1}}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdna@addchar}[1]{Character}
+%    \begin{macrocode}
+\def\tikzdna@addchar#1{%
+  \tikzdna@ifcharexists{#1}{%
+    \edef\tikzdna@chars{\tikzdna@chars,#1}%
+  }{}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tikzdnachar@}[3]{Character}{Start position}{Character
+%   drawing code}
+%    \begin{macrocode}
+\def\tikzdnachar@#1#2#3{%
+  \tikzdna@nameedef{@}{#1}{}{#2 coordinate (dna/start) #3}%
+  \tikzdnadef{{#1}{#1}}{#3}%
+}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\tikzdnause}[1]{Character(s)}
 %    \begin{macrocode}
@@ -2375,39 +2494,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\tikzdna@addchar}[1]{Character}
-%    \begin{macrocode}
-\def\tikzdna@addchar#1{%
-  \tikzdna@ifcharexists{#1}{%
-    \edef\tikzdna@chars{\tikzdna@chars,#1}%
-  }{}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\tikzdnachar}[1]{New character}
-%    \begin{macrocode}
-\def\tikzdnachar#1{%
-  \uppercase{%
-    \tikzdna@addchar{#1}%
-    \tikzdnachar@{#1}}%
-}
-%    \end{macrocode}
-% \end{macro}
-%
 %    \begin{macrocode}
 \@namedef{\tikzdna@prefix @@}#1#2#3#4{ coordinate (dna/start)}%
 %    \end{macrocode}
-%
-% \begin{macro}{\tikzdnachar@}[3]{Character}{Start position}{Character
-%   drawing code}
-%    \begin{macrocode}
-\def\tikzdnachar@#1#2#3{%
-  \tikzdna@nameedef{@}{#1}{}{#2 coordinate (dna/start) #3}%
-  \tikzdnadef{{#1}{#1}}{#3}%
-}
-%    \end{macrocode}
-% \end{macro}
 %
 % \begin{macro}{\tikzdnaecopy}[2]{New character}{Original character}
 %    \begin{macrocode}

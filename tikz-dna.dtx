@@ -104,6 +104,18 @@
 %   \dna [] at (0,0) {[]HLHL};
 % \end{tikzpicture}
 %
+% \section{\tikzname DNA shapes library}
+%
+% The \tikzname library |shapes.dna| is included to provide some DNA symbols.
+%
+% \tikz \node [
+% draw,
+% inner sep=0.5pt,
+% single bent arrow,
+% minimum height=11pt,
+% single bent arrow head extend=1.5pt
+% ] {};
+%
 % \StopEventually{}
 %
 % \section{Implementation}
@@ -131,7 +143,7 @@
 %
 %    \begin{macrocode}
 \RequirePackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,shapes.dna}
 \RequirePackage{unravel}
 \unravelsetup{max-action=500,max-input=500,max-output=500}
 %    \end{macrocode}

@@ -1,0 +1,605 @@
+%
+% Copyright © 2021 by Timothy S. Jones
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Timothy S. Jones.
+%
+% This work consists of the files:
+%
+%   tikz-dna.dtx
+%   tikz-dna.ins
+%   tikzlibraryshapes.dna.code.tex
+%   pgflibraryshapes.dna.code.tex
+%
+% and the derived file tikz-dna.sty.
+%
+
+\ProvidesFile{pgflibraryshapes.dna.code.tex}
+
+
+% keys for shape single bent arrow
+%
+% /pgf/single bent arrow tip angle
+% /pgf/single bent arrow head extend
+% /pgf/single bent arrow head indent
+
+\pgfkeys{/pgf/.cd,
+    single bent arrow tip angle/.initial=90,
+    single bent arrow head extend/.initial=.25cm,
+    single bent arrow head indent/.initial=0cm,
+}%
+
+% Shape single bent arrow
+%
+%
+\pgfdeclareshape{single bent arrow}{%
+    \savedmacro\getsinglearrowpoints{%
+        %
+        % Get the outer sep.
+        %
+        \pgfmathsetlength\pgf@x{\pgfkeysvalueof{/pgf/outer xsep}}%
+        \edef\xoutersep{\the\pgf@x}%
+        \pgfmathsetlength\pgf@y{\pgfkeysvalueof{/pgf/outer ysep}}%
+        \edef\youtersep{\the\pgf@y}%
+        %
+        % Get the node dimensions.
+        %
+        \pgfmathsetlength\pgf@xa{\pgfkeysvalueof{/pgf/inner xsep}}%
+        \advance\pgf@xa.5\wd\pgfnodeparttextbox%
+        \advance\pgf@xa.5\pgflinewidth%
+        \pgfmathsetlength\pgf@ya{\pgfkeysvalueof{/pgf/inner ysep}}%
+        \advance\pgf@ya.5\ht\pgfnodeparttextbox%
+        \advance\pgf@ya.5\dp\pgfnodeparttextbox%
+        \advance\pgf@ya.5\pgflinewidth%
+        \ifpgfshapeborderusesincircle%
+            \ifdim\pgf@xa<\pgf@ya%
+                \pgf@xa\pgf@ya%
+            \fi%
+            \pgf@xa1.41421\pgf@xa%
+            \pgf@ya\pgf@xa%
+            \pgfmathsetmacro\rotate{\pgfkeysvalueof{/pgf/shape border rotate}}%
+            \ifdim\xoutersep>\youtersep\relax%
+                \let\youtersep\xoutersep%
+            \else%
+                \let\xoutersep\youtersep%
+            \fi%
+        \else%
+            %
+            % Round the rotation.
+            %
+            \pgfmathsetmacro\rotate{\pgfkeysvalueof{/pgf/shape border rotate}}%
+            \pgfmathmod@{\rotate}{360}%
+            \afterassignment\pgfmath@gobbletilpgfmath@%
+            \expandafter\c@pgf@counta\pgfmathresult\relax\pgfmath@%
+            \advance\c@pgf@counta45\relax%
+            \divide\c@pgf@counta90\relax%
+            \multiply\c@pgf@counta90\relax%
+            \ifnum\c@pgf@counta<0\relax%
+                \advance\c@pgf@counta360\relax%
+            \fi%
+            \edef\rotate{\the\c@pgf@counta}%
+            %
+            % Calculate the width and height of the node
+            % contents, according to any border rotation.
+            %
+            \ifnum\c@pgf@counta=90\relax%
+                \pgf@x\pgf@xa%
+                \pgf@xa\pgf@ya%
+                \pgf@ya\pgf@x%
+                \let\pgfmathresult\xoutersep%
+                \let\xoutersep\youtersep%
+                \let\youtersep\pgfmathresult%
+            \else%
+                \ifnum\c@pgf@counta=270\relax%
+                    \pgf@x\pgf@xa%
+                    \pgf@xa\pgf@ya%
+                    \pgf@ya\pgf@x%
+                    \let\pgfmathresult\xoutersep%
+                    \let\xoutersep\youtersep%
+                    \let\youtersep\pgfmathresult%
+                \fi%
+            \fi%
+        \fi%
+        \addtosavedmacro\rotate%
+        %
+        % Get some useful trig stuff.
+        %
+        \pgfmathdivide{\pgfkeysvalueof{/pgf/single bent arrow tip angle}}{2}%
+        \let\halftipangle\pgfmathresult%
+        \pgfmathcosec@{\halftipangle}%
+        \let\cosechalftipangle\pgfmathresult%
+        \pgfmathcos@{\halftipangle}%
+        \pgfutil@tempdima\pgfmathresult pt\relax%
+        \pgfutil@tempdima\cosechalftipangle\pgfutil@tempdima%
+        \edef\cothalftipangle{\pgfmath@tonumber{\pgfutil@tempdima}}%
+        \pgfmathreciprocal@{\pgfmathresult}%
+        \let\sechalftipangle\pgfmathresult%
+        \pgfmathsin@{\halftipangle}%
+        \pgfutil@tempdima\pgfmathresult pt\relax%
+        \pgfutil@tempdima\sechalftipangle\pgfutil@tempdima%
+        \edef\tanhalftipangle{\pgfmath@tonumber{\pgfutil@tempdima}}%
+        %
+        % Get the single arrow head extend, and adjust for minimum width.
+        %
+        \pgf@xb\pgf@ya%
+        \pgf@xb\cothalftipangle\pgf@xb%
+        \pgfmathsetlength\pgf@xc{\pgfkeysvalueof{/pgf/single bent arrow head extend}}%
+        \pgf@yc\pgf@xc%
+        \advance\pgf@xc\pgf@ya%
+        \pgfmathsetlength\pgfutil@tempdimb{\pgfkeysvalueof{/pgf/minimum width}}%
+        \ifdim\pgf@xc<.5\pgfutil@tempdimb%
+            \pgfutil@tempdimb.5\pgfutil@tempdimb%
+            \pgfmathdivide@{\pgfmath@tonumber{\pgfutil@tempdimb}}{\pgfmath@tonumber{\pgf@xc}}%
+            \pgf@ya\pgfmathresult\pgf@ya%
+            \pgf@xc\pgfmathresult\pgf@xc%
+            \pgf@yc\pgfmathresult\pgf@yc%
+            \pgf@xb\pgfmathresult\pgf@xb%
+        \fi%
+        %
+        % Now calculate the height of the arrow and adjust for minimum height.
+        %
+        \advance\pgf@xc-\pgf@ya%
+        \pgf@xc\cothalftipangle\pgf@xc%
+        \pgf@xa2.0\pgf@xa%
+        \advance\pgf@xa\pgf@xb%
+        \pgfmathsetlength\pgfutil@tempdimb{\pgfkeysvalueof{/pgf/minimum height}}%
+        \ifdim\pgf@xa<\pgfutil@tempdimb%
+            \pgf@xa\pgfutil@tempdimb%
+        \fi%
+        \advance\pgf@xa-\pgf@xb%
+        \pgf@xa.5\pgf@xa%
+        \pgfmathsetlength\pgfutil@tempdima{\pgfkeysvalueof{/pgf/single bent arrow head indent}}%
+        %
+        % Now:
+        %
+        % xa - .5 * width of the node minus xb.
+        % ya - .5 * height of the node contents.
+        % xb - distance from the end of the node contents to the arrow tip.
+        % xc - distance from the end of the node contents to the back end of the arrow head.
+        % yc - distance from the top of the node contents to the top end of the arrow head.
+        %
+        \pgfsavepgf@process\centerpoint{%
+            \pgf@x.5\wd\pgfnodeparttextbox%
+            \pgf@y.5\ht\pgfnodeparttextbox%
+            \advance\pgf@y-.5\dp\pgfnodeparttextbox%
+        }%
+        \pgfsavepgf@process\basepoint{%
+            \pgf@x.5\wd\pgfnodeparttextbox%
+            \pgf@y0pt%
+        }%
+        \pgfsavepgf@process\midpoint{%
+            \pgf@x.5\wd\pgfnodeparttextbox%
+            \pgfmathsetlength\pgf@y{+.5ex}%
+        }%
+        %
+        % Should only need five points here...
+        %
+        \pgfsavepgf@process\arrowtip{%
+            \pgf@x\pgf@xa%
+            \advance\pgf@x\pgf@xb%
+            \pgf@y0pt\relax%
+        }%
+        \pgfsavepgf@process\beforearrowtip{%
+            \pgf@x\pgf@xa%
+            \advance\pgf@x-\pgf@xc%
+            \pgf@y\pgf@ya%
+            \advance\pgf@y\pgf@yc%
+        }%
+        \pgfsavepgf@process\beforearrowhead{%
+            \pgf@x\pgf@xa%
+            \advance\pgf@x-\pgf@xc%
+            \advance\pgf@x\pgfutil@tempdima%
+            \pgf@y\pgf@ya%
+        }%
+        \pgfsavepgf@process\beforearrowbend{%
+            \pgf@x-\pgf@xa%
+            \pgf@y\pgf@ya%
+        }%
+        \pgfsavepgf@process\afterarrowbend{%
+            \pgf@x-\pgf@xa%
+            \advance\pgf@x2\pgf@ya
+            \pgf@y-\pgf@ya%
+        }%
+        \pgfsavepgf@process\afterarrowtail{%
+            \pgf@x-\pgf@xa%
+            \pgf@y\pgf@ya%
+            \advance\pgf@y-2\pgf@xa%
+        }%
+        \pgfsavepgf@process\beforearrowtail{%
+            \pgf@x-\pgf@xa%
+            \advance\pgf@x2\pgf@ya
+            \pgf@y\pgf@ya%
+            \advance\pgf@y-2\pgf@xa%
+        }%
+        %
+        % Calculate the anchor point at the arrow tip...
+        %
+        \pgfsavepgf@process\arrowtipanchor{%
+            \pgfpointadd{\centerpoint}{\arrowtip}%
+            \pgf@xa\xoutersep\relax%
+            \advance\pgf@x\cosechalftipangle\pgf@xa%
+        }%
+        \advance\pgf@x.5\wd\pgfnodeparttextbox%
+        \edef\externalradius{\the\pgf@x}%
+        \addtosavedmacro\externalradius%
+        %
+        % ...and the rest of the points.
+        %
+        \pgfmathanglebetweenlines{\beforearrowtip}{\beforearrowhead}{\beforearrowtip}{\arrowtip}%
+        \pgf@xa\xoutersep\relax%
+        \pgfutil@tempdima\pgfmathresult pt\relax%
+        \pgfutil@tempdima.5\pgfutil@tempdima%
+        \pgfmathcosec@{\pgfmath@tonumber{\pgfutil@tempdima}}%
+        \pgf@xa\pgfmathresult\pgf@xa%
+        \pgfutil@tempdima-\pgfutil@tempdima%
+        \advance\pgfutil@tempdima180pt\relax%
+        \advance\pgfutil@tempdima-\halftipangle pt\relax%
+        %
+        \pgfsavepgf@process\beforearrowtipanchor{%
+            \pgfqpointpolar{\pgfmath@tonumber{\pgfutil@tempdima}}{\the\pgf@xa}%
+            \pgf@xb\pgf@x%
+            \pgf@yb\pgf@y%
+            \pgf@process{\pgfpointadd{\centerpoint}{\beforearrowtip}}%
+            \advance\pgf@x\pgf@xb%
+            \advance\pgf@y\pgf@yb%
+        }%
+        \pgfmathanglebetweenpoints{\beforearrowhead}{\beforearrowtip}%
+        \pgfutil@tempdima-\pgfmathresult pt\relax%
+        \advance\pgfutil@tempdima180pt\relax%
+        \pgfutil@tempdima.5\pgfutil@tempdima%
+        \pgfmathcosec@{\pgfmath@tonumber{\pgfutil@tempdima}}%
+        \pgf@xa\xoutersep\relax%
+        \pgf@xa\pgfmathresult\pgf@xa%
+        \pgfutil@tempdima-\pgfutil@tempdima%
+        \advance\pgfutil@tempdima180pt\relax%
+        \pgfsavepgf@process\beforearrowheadanchor{%
+            \pgfqpointpolar{\pgfmath@tonumber{\pgfutil@tempdima}}{\the\pgf@xa}%
+            \pgf@xb\pgf@x%
+            \pgf@yb\pgf@y%
+            \pgf@process{\pgfpointadd{\centerpoint}{\beforearrowhead}}%
+            \advance\pgf@x\pgf@xb%
+            \advance\pgf@y\pgf@yb%
+        }%
+        \pgfsavepgf@process\beforearrowbendanchor{%
+            \pgfpointadd{\centerpoint}{\beforearrowbend}%
+            \advance\pgf@x-\xoutersep\relax%
+            \advance\pgf@y\youtersep\relax%
+        }%
+        \pgfsavepgf@process\afterarrowbendanchor{%
+            \pgfpointadd{\centerpoint}{\afterarrowbend}%
+            \advance\pgf@x\xoutersep\relax%
+            \advance\pgf@y-\youtersep\relax%
+        }%
+        \pgfsavepgf@process\afterarrowtailanchor{%
+            \pgfpointadd{\centerpoint}{\afterarrowtail}%
+            \advance\pgf@x-\xoutersep\relax%
+            \advance\pgf@y-\youtersep\relax%
+        }%
+        \pgfsavepgf@process\beforearrowtailanchor{%
+            \pgfpointadd{\centerpoint}{\beforearrowtail}%
+            \advance\pgf@x\xoutersep\relax%
+            \advance\pgf@y-\youtersep\relax%
+        }%
+        %
+        \pgfmathanglebetweenpoints{\centerpoint}{\beforearrowtipanchor}%
+        \let\center@angle@beforearrowtip\pgfmathresult%
+        \pgfmathanglebetweenpoints{\centerpoint}{\beforearrowheadanchor}%
+        \let\center@angle@beforearrowhead\pgfmathresult%
+        \pgfmathanglebetweenpoints{\centerpoint}{\beforearrowbendanchor}%
+        \let\center@angle@beforearrowbend\pgfmathresult%
+        \addtosavedmacro\center@angle@beforearrowtip%
+        \addtosavedmacro\center@angle@beforearrowhead%
+        \addtosavedmacro\center@angle@beforearrowbend%
+        %
+        \pgfmathanglebetweenpoints{\midpoint}{\beforearrowtipanchor}%
+        \let\mid@angle@beforearrowtip\pgfmathresult%
+        \pgfmathanglebetweenpoints{\midpoint}{\beforearrowheadanchor}%
+        \let\mid@angle@beforearrowhead\pgfmathresult%
+        \pgfmathanglebetweenpoints{\midpoint}{\beforearrowbendanchor}%
+        \let\mid@angle@beforearrowbend\pgfmathresult%
+        \addtosavedmacro\mid@angle@beforearrowtip%
+        \addtosavedmacro\mid@angle@beforearrowhead%
+        \addtosavedmacro\mid@angle@beforearrowbend%
+        %
+        \pgfmathanglebetweenpoints{\basepoint}{\beforearrowtipanchor}%
+        \let\base@angle@beforearrowtip\pgfmathresult%
+        \pgfmathanglebetweenpoints{\basepoint}{\beforearrowheadanchor}%
+        \let\base@angle@beforearrowhead\pgfmathresult%
+        \pgfmathanglebetweenpoints{\basepoint}{\beforearrowbendanchor}%
+        \let\base@angle@beforearrowbend\pgfmathresult%
+        \addtosavedmacro\base@angle@beforearrowtip%
+        \addtosavedmacro\base@angle@beforearrowhead%
+        \addtosavedmacro\base@angle@beforearrowbend%
+        %
+        \addtosavedmacro\arrowtipanchor%
+        \addtosavedmacro\beforearrowtipanchor%
+        \addtosavedmacro\beforearrowheadanchor%
+        \addtosavedmacro\beforearrowbendanchor%
+        \addtosavedmacro\afterarrowbendanchor%
+        \addtosavedmacro\afterarrowtailanchor%
+        \addtosavedmacro\beforearrowtailanchor%
+    }%
+    \savedanchor\centerpoint{%
+        \pgf@x.5\wd\pgfnodeparttextbox%
+        \pgf@y.5\ht\pgfnodeparttextbox%
+        \advance\pgf@y-.5\dp\pgfnodeparttextbox%
+    }%
+    \savedanchor\midpoint{%
+        \pgf@x.5\wd\pgfnodeparttextbox%
+        \pgfmathsetlength\pgf@y{+0.5ex}%
+    }%
+    \savedanchor\basepoint{%
+        \pgf@x.5\wd\pgfnodeparttextbox%
+        \pgf@y0pt%
+    }%
+    \anchor{center}{\centerpoint}%
+    \anchor{mid}{\midpoint}%
+    \anchor{mid east}{%
+        \getsinglearrowpoints%
+        \let\pgf@singlearrow@referencepoint\midpoint%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{\externalradius}{0pt}}%
+    }%
+    \anchor{mid west}{%
+        \getsinglearrowpoints%
+        \let\pgf@singlearrow@referencepoint\midpoint%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{-\externalradius}{0pt}}%
+    }%
+    \anchor{base}{\basepoint}%
+    \anchor{base east}{%
+        \getsinglearrowpoints%
+        \let\pgf@singlearrow@referencepoint\basepoint%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{\externalradius}{0pt}}%
+    }%
+    \anchor{base west}{%
+        \getsinglearrowpoints%
+        \let\pgf@singlearrow@referencepoint\basepoint%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{-\externalradius}{0pt}}%
+    }%
+    \anchor{north}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{0pt}{\externalradius}}%
+    }%
+    \anchor{south}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{0pt}{-\externalradius}}%
+    }%
+    \anchor{east}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{\externalradius}{0pt}}%
+    }%
+    \anchor{west}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{-\externalradius}{0pt}}%
+    }%
+    \anchor{north east}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{\externalradius}{\externalradius}}%
+    }%
+    \anchor{south east}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{\externalradius}{-\externalradius}}%
+    }%
+    \anchor{south west}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{-\externalradius}{-\externalradius}}%
+    }%
+    \anchor{north west}{%
+        \getsinglearrowpoints%
+        \csname pgf@anchor@single bent arrow@border\endcsname{\pgfqpoint{-\externalradius}{\externalradius}}%
+    }%
+    \anchor{before head}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\beforearrowheadanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{before tip}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\beforearrowtipanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{tip}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\arrowtipanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{after tip}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{%
+            \pgfpointadd{%
+                \pgfpointdiff{\centerpoint}{\beforearrowtipanchor}%
+                \pgf@y-\pgf@y%
+            }{\centerpoint}}%
+        {\centerpoint}{\rotate}%
+    }%
+    \anchor{after head}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{%
+            \pgfpointadd{%
+                \pgfpointdiff{\centerpoint}{\beforearrowheadanchor}%
+                \pgf@y-\pgf@y%
+            }{\centerpoint}}%
+        {\centerpoint}{\rotate}%
+    }%
+    \anchor{before tail}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\beforearrowtailanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{before bend}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\beforearrowbendanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{after bend}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\afterarrowbendanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{after tail}{%
+        \getsinglearrowpoints%
+        \pgfmathrotatepointaround{\afterarrowtailanchor}{\centerpoint}{\rotate}%
+    }%
+    \anchor{tail}{%
+        \getsinglearrowpoints%
+        \pgfpointlineattime{0.5}{%
+            \pgfmathrotatepointaround{\beforearrowbendanchor}{\centerpoint}{\rotate}%
+        }%
+        {%
+            \pgfmathrotatepointaround{%
+            \pgfpointadd{%
+                \pgfpointdiff{\centerpoint}{\beforearrowbendanchor}%
+                \pgf@y-\pgf@y%
+            }{\centerpoint}}%
+            {\centerpoint}{\rotate}%
+        }%
+    }%
+    \backgroundpath{%
+        {%
+            \pgftransformshift{\centerpoint}%
+            \pgftransformrotate{\rotate}%
+            \pgfpathmoveto{\arrowtip}%
+            \pgfpathlineto{\beforearrowtip}%
+            \pgfpathlineto{\beforearrowhead}%
+            \pgfpathlineto{\beforearrowbend}%
+            \pgfpathlineto{\afterarrowtail}%
+            \pgfpathlineto{\beforearrowtail}%
+            \pgfpathlineto{\afterarrowbend}%
+            \pgfpathlineto{\beforearrowhead\pgf@y-\pgf@y}%
+            \pgfpathlineto{\beforearrowtip\pgf@y-\pgf@y}%           
+        }%
+        \pgfpathclose%
+    }%
+    \anchorborder{%
+        \pgfsavepgf@process\externalpoint{}%            
+        \getsinglearrowpoints%
+        \pgfutil@ifundefined{pgf@singlearrow@referencepoint}{\let\referencepoint\centerpoint}%
+            {\let\referencepoint\pgf@singlearrow@referencepoint}%
+        \pgfsavepgf@process\externalpoint{%
+            \externalpoint%
+            \pgf@xa\pgf@x%
+            \pgf@ya\pgf@y%
+            \referencepoint%
+            \advance\pgf@x\pgf@xa%
+            \advance\pgf@y\pgf@ya}% 
+        \pgfmathanglebetweenpoints{\centerpoint}{\externalpoint}%
+        \pgfmathsubtract@{\pgfmathresult}{\rotate}%
+        \ifdim\pgfmathresult pt<0pt\relax%
+            \pgfmathadd@{\pgfmathresult}{360}%
+        \fi%
+        \let\externalangle\pgfmathresult%
+        \pgf@x\externalangle pt\relax%
+        \ifx\referencepoint\midpoint%
+            \pgf@xa\mid@angle@beforearrowtip pt\relax%
+            \pgf@xb\mid@angle@beforearrowhead pt\relax%
+            \pgf@xc\mid@angle@beforearrowbend pt\relax%
+        \else%
+            \ifx\referencepoint\basepoint%
+                \pgf@xa\base@angle@beforearrowtip pt\relax%
+                \pgf@xb\base@angle@beforearrowhead pt\relax%
+                \pgf@xc\base@angle@beforearrowbend pt\relax%
+            \else%
+                \pgf@xa\center@angle@beforearrowtip pt\relax%
+                \pgf@xb\center@angle@beforearrowhead pt\relax%
+                \pgf@xc\center@angle@beforearrowbend pt\relax%
+            \fi%
+        \fi%
+        \ifdim\pgf@x<\pgf@xa%
+            \let\firstpoint\arrowtipanchor%
+            \let\secondpoint\beforearrowtipanchor%
+        \else%
+            \ifdim\pgf@x<\pgf@xb%
+                \ifdim\pgf@xb<\pgf@xa%
+                    \let\firstpoint\arrowtipanchor%
+                    \let\secondpoint\beforearrowtipanchor%
+                \else%
+                    \let\firstpoint\beforearrowheadanchor%
+                    \let\secondpoint\beforearrowtipanchor%
+                \fi%
+            \else%
+                \ifdim\pgf@x<\pgf@xc%
+                    \let\firstpoint\beforearrowheadanchor%
+                    \let\secondpoint\beforearrowbendanchor%
+                \else%
+                    \pgf@xc-\pgf@xc%
+                    \advance\pgf@xc360pt\relax%
+                    \ifdim\pgf@x<\pgf@xc%
+                        \let\firstpoint\beforearrowbendanchor%
+                        \pgfsavepgf@process\secondpoint{%
+                            \pgfpointadd{%
+                                \pgfpointdiff{\centerpoint}{\beforearrowbendanchor}%
+                                \pgf@y-\pgf@y%
+                            }{\centerpoint}%
+                        }%
+                    \else%
+                        \pgf@xa-\pgf@xa%
+                        \advance\pgf@xa360pt\relax%
+                        \pgf@xb-\pgf@xb%
+                        \advance\pgf@xb360pt\relax%
+                        \ifdim\pgf@x<\pgf@xa%
+                            \ifdim\pgf@x<\pgf@xb%
+                                \pgfsavepgf@process\firstpoint{%
+                                    \pgfpointadd{%
+                                            \pgfpointdiff{\centerpoint}{\beforearrowbendanchor}%
+                                            \pgf@y-\pgf@y%
+                                    }{\centerpoint}%
+                                }%
+                                \pgfsavepgf@process\secondpoint{%
+                                    \pgfpointadd{%
+                                        \pgfpointdiff{\centerpoint}{\beforearrowheadanchor}%
+                                        \pgf@y-\pgf@y%
+                                    }{\centerpoint}%
+                                }%
+                            \else%
+                                \ifdim\pgf@xb<\pgf@xa%
+                                    \pgfsavepgf@process\firstpoint{%
+                                        \pgfpointadd{%
+                                                \pgfpointdiff{\centerpoint}{\beforearrowheadanchor}%
+                                                \pgf@y-\pgf@y%
+                                        }{\centerpoint}%
+                                    }%
+                                \else%
+                                    \pgfsavepgf@process\firstpoint{%
+                                        \pgfpointadd{%
+                                                \pgfpointdiff{\centerpoint}{\arrowtipanchor}%
+                                                \pgf@y-\pgf@y%
+                                        }{\centerpoint}%
+                                    }%
+                                \fi%
+                                \pgfsavepgf@process\secondpoint{%
+                                        \pgfpointadd{%
+                                            \pgfpointdiff{\centerpoint}{\beforearrowtipanchor}%
+                                            \pgf@y-\pgf@y%
+                                        }{\centerpoint}%
+                                    }%
+                            \fi%
+                        \else%
+                            \pgfsavepgf@process\firstpoint{%
+                                \pgfpointadd{%
+                                    \pgfpointdiff{\centerpoint}{\beforearrowtipanchor}%
+                                    \pgf@y-\pgf@y%
+                                }{\centerpoint}%
+                            }%
+                            \let\secondpoint\arrowtipanchor%
+                        \fi%
+                    \fi%
+                \fi%
+            \fi%
+        \fi%
+        \pgfsavepgf@process\firstpoint{%
+            \pgfmathrotatepointaround{\firstpoint}{\centerpoint}{\rotate}%
+        }%
+        \pgfsavepgf@process\secondpoint{%
+            \pgfmathrotatepointaround{\secondpoint}{\centerpoint}{\rotate}%
+        }%
+        \pgfpointintersectionoflines{\referencepoint}{\externalpoint}%
+            {\firstpoint}{\secondpoint}%
+    }%
+}%
+
+
+
+
+\endinput

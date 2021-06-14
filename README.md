@@ -5,7 +5,10 @@ This is a LaTeX package for drawing genetic construct pictograms using
 
 # Gallery
 
-<img title="example" alt="example" src="example.png">
+![Example plot](example.png "Example plot")
+
+Compare this image with [this gallery entry](https://github.com/VoigtLab/dnaplotlib/tree/master/gallery/xnor_truthtable)
+from dnaplotlib. The image above was drawn entirely in Ti*k*Z.
 
 # License
 

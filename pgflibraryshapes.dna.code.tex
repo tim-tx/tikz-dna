@@ -599,6 +599,78 @@
     }%
 }%
 
+% keys for shape promoter
+%
+% /pgf/promoter arrow
+
+\pgfkeys{/pgf/.cd,
+    promoter arrow/.initial=Triangle,
+}%
+
+% Shape promoter
+%
+%
+\pgfdeclareshape{promoter}{%
+  \inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+  \inheritanchorborder[from=rectangle]%
+  \inheritanchor[from=rectangle]{center}%
+  \inheritanchor[from=rectangle]{north}%
+  \inheritanchor[from=rectangle]{north west}%
+  \inheritanchor[from=rectangle]{north east}%
+  \inheritanchor[from=rectangle]{south}%
+  \inheritanchor[from=rectangle]{south west}%
+  \inheritanchor[from=rectangle]{south east}%
+  \inheritanchor[from=rectangle]{west}%
+  \inheritanchor[from=rectangle]{east}%
+  \anchor{crown}{%
+    \pgf@process{\southwest}%
+    \pgf@xa=\pgf@x%
+    \pgf@process{\northeast}%
+    \advance\pgf@x by \pgf@xa%
+    \advance\pgf@y by 3pt%
+  }%
+  \backgroundpath{% this is new
+    % store lower right in xa/ya and upper right in xb/yb
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y%
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y%
+    % construct main path
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}%
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}%
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}%
+    \pgfsetarrowsend{\pgfkeysvalueof{/pgf/promoter arrow}}%
+  }%
+}%
+
+
+% Shape terminator
+%
+%
+\pgfdeclareshape{terminator}{%
+  \inheritsavedanchors[from=rectangle] % this is nearly a rectangle
+  \inheritanchorborder[from=rectangle]%
+  \inheritanchor[from=rectangle]{center}%
+  \inheritanchor[from=rectangle]{north}%
+  \inheritanchor[from=rectangle]{north west}%
+  \inheritanchor[from=rectangle]{north east}%
+  \inheritanchor[from=rectangle]{south}%
+  \inheritanchor[from=rectangle]{south west}%
+  \inheritanchor[from=rectangle]{south east}%
+  \inheritanchor[from=rectangle]{west}%
+  \inheritanchor[from=rectangle]{east}%
+  \backgroundpath{
+    % store lower right in xa/ya and upper right in xb/yb
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y%
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y%
+    \advance\pgf@x by \pgf@xa%
+    \pgf@xc=\pgf@x%
+    % construct main path
+    \pgfpathmoveto{\pgfpoint{\pgf@xc}{\pgf@ya}}%
+    \pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yb}}%
+    \pgfpathmoveto{\pgfpoint{\pgf@xb}{\pgf@yb}}%
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}%
+  }%
+}%
+
 
 
 

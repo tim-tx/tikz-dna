@@ -109,7 +109,7 @@
 % The \tikzname library |shapes.dna| is included to provide some DNA symbols.
 %
 % \tikz \node [
-% draw,
+% fill=red,
 % inner sep=0.5pt,
 % single bent arrow,
 % minimum height=11pt,
@@ -2575,7 +2575,7 @@
 \def\tikzdna@chars{H,L,Z,X,M,D,U,T,C}%
 %    \end{macrocode}
 %
-% \subsubsection{Character `S'}
+% \subsubsection{Character \tt S}
 % This character is now implemented as modifier to avoid hassle with triple
 % character transitions.
 %    \begin{macrocode}
@@ -2604,7 +2604,7 @@
 }
 %    \end{macrocode}
 %
-% \subsubsection{Character `G'}
+% \subsubsection{Character \tt G}
 %    \begin{macrocode}
 \tikzdna@defcode{G}{%
   \tikzdna@output@addcode{%
@@ -2627,7 +2627,7 @@
 }
 %    \end{macrocode}
 %
-% \subsubsection{Character `H'}
+% \subsubsection{Character \tt H}
 %    \begin{macrocode}
 \tikzdnachar{H}{++(0,\height)}{[\style] -- ++(#1,0)}
 
@@ -2655,7 +2655,7 @@
 
 %    \end{macrocode}
 %
-% \subsubsection{Character `L'}
+% \subsubsection{Character \tt L}
 %    \begin{macrocode}
 \tikzdnadef{DL}{
   \tikzdna@oldnodecenter@
@@ -3146,7 +3146,7 @@
 
 %    \end{macrocode}
 %
-% \subsection{Character `M'}
+% \subsubsection{Character \tt M}
 %    \begin{macrocode}
 \tikzdnaecopy{M}{Z}
 \tikzdnachar{M}{++(0,\height/2.)}{
@@ -3183,10 +3183,9 @@
   -- ($ (dna@ref) + (#1,0) $)
   \newdraw [\style/base]
 }
-
 %    \end{macrocode}
 %
-% \subsubsection{Character `T'}
+% \subsubsection{Character \tt T}
 %    \begin{macrocode}
 \newcounter{tikzdnatrans}
 \newcounter{tikzdnatranspos}
@@ -3264,12 +3263,12 @@
 }
 %    \end{macrocode}
 %
-% \subsubsection{Character `C'}
+% \subsubsection{Character \tt C}
 %    \begin{macrocode}
 \tikzdnaecopy{C}{T}
 %    \end{macrocode}
 %
-% \subsubsection{Character `U'}
+% \subsubsection{Character \tt U}
 %    \begin{macrocode}
 \tikzdnaecopy{U}{D}
 
@@ -3360,10 +3359,9 @@
   \tikzdna@oldnodecenter@%
   \tikzdna@chard@{#1}%
 }
-
 %    \end{macrocode}
 %
-% \subsubsection{Character `X'}
+% \subsubsection{Character \tt X}
 %    \begin{macrocode}
 \tikzdnaecopy{X}{Z}
 %    \end{macrocode}

@@ -1,7 +1,8 @@
 # Description
 
 This is a LaTeX package for drawing genetic construct pictograms using
-[Ti*k*Z](https://www.ctan.org/pkg/pgf).
+[Ti*k*Z](https://www.ctan.org/pkg/pgf). **Under development, there are
+no reusable macros at the moment.**
 
 # Gallery
 

@@ -13,46 +13,7 @@
 \pgfplotsset{compat=1.17}
 
 \usepackage{tikz}
-\usetikzlibrary{decorations.markings,shapes.arrows,shapes.geometric,arrows.meta,shapes.dna}
-
-\tikzset{
-  feature/.style={draw, transform shape},
-  coding sequence/.style={
-    feature,
-    shape=single arrow,
-    minimum height=6mm,
-    single arrow head extend=1mm,
-    anchor=west
-  },
-  ribosome binding site/.style={
-    feature,
-    shape=semicircle,
-    anchor=south,
-    yshift=-0.5\pgflinewidth,
-    inner sep=1pt,
-    fill=black
-  },
-  promoter/.style={
-    feature,
-    shape=promoter,
-    promoter arrow={Triangle[length=3pt,width=3pt]},
-    anchor=south west,
-    yshift=\pgflinewidth,
-    minimum height=2mm,
-    minimum width=2mm,
-    inner sep=0
-  },
-  terminator/.style={
-    feature,
-    shape=terminator,
-    anchor=south,
-    yshift=0.5\pgflinewidth,
-    minimum height=2mm,
-    minimum width=2mm,
-    inner sep=0
-  },
-  line cap=rect,
-}
+\usetikzlibrary{decorations.markings,shapes.arrows,shapes.geometric,arrows.meta,shapes.dna,dna}
 
 \definecolor{color A}{rgb}{1.00, 0.75, 0.17}
 \definecolor{color B}{rgb}{0.38, 0.82, 0.32}
@@ -62,11 +23,73 @@
 \begin{document}
 \sansmath
 
+% Plot styles
 \tikzset{
   plot/.style={draw=black, line width=1pt},
   on/.style={plot, fill=black},
   off/.style={plot},
 }
+
+% pic
+\tikzset{
+  g label/.style={label={[white]center:\footnotesize\it {#1}}},
+  p label/.style={label={[anchor=base, yshift=-8pt]below:\scriptsize {#1}}},
+  circuit/.pic={
+    \draw [
+    postaction={decorate},
+    decoration={
+      markings,
+      mark=at position 2mm with  {\node [promoter, black!\pgfkeysvalueof{/tikz/p11 tint}, p label=\pgfkeysvalueof{/tikz/p1 label}] (-p11) {};},
+      mark=at position 5mm with  {\node [promoter, black!\pgfkeysvalueof{/tikz/p12 tint}, p label=\pgfkeysvalueof{/tikz/p2 label}] (-p12) {};},
+      mark=at position 7mm with  {\node [ribosome binding site] (-r1) {};},
+      mark=at position 9mm with  {\node [coding sequence, gA, fill=\pgfkeysvalueof{/tikz/A fill}, g label=\pgfkeysvalueof{/tikz/A label}] (-gA) {};},
+      mark=at position 16mm with {\node [terminator] (-t1) {};},
+      mark=at position 18mm with {\node [promoter, black!\pgfkeysvalueof{/tikz/p21 tint}, p label=\pgfkeysvalueof{/tikz/p2 label}] (-p21) {};},
+      mark=at position 21mm with {\node [promoter, color A!\pgfkeysvalueof{/tikz/p22 tint}] (-p22) {};},
+      mark=at position 23mm with {\node [ribosome binding site] (-r2) {};},
+      mark=at position 25mm with {\node [coding sequence, gB, fill=\pgfkeysvalueof{/tikz/B fill}, g label=\pgfkeysvalueof{/tikz/B label}] (-gB) {};},
+      mark=at position 32mm with {\node [terminator] (-t2) {};},
+      mark=at position 34mm with {\node [promoter, black!\pgfkeysvalueof{/tikz/p31 tint}, p label=\pgfkeysvalueof{/tikz/p1 label}] (-p31) {};},
+      mark=at position 37mm with {\node [promoter, color A!\pgfkeysvalueof{/tikz/p32 tint}] (-p32) {};},
+      mark=at position 39mm with {\node [ribosome binding site] (-r3) {};},
+      mark=at position 41mm with {\node [coding sequence, gC, fill=\pgfkeysvalueof{/tikz/C fill}, g label=\pgfkeysvalueof{/tikz/C label}] (-gC) {};},
+      mark=at position 48mm with {\node [terminator] (-t3) {};},
+      mark=at position 50mm with {\node [promoter, color B!\pgfkeysvalueof{/tikz/p41 tint}] (-p41) {};},
+      mark=at position 53mm with {\node [promoter, color C!\pgfkeysvalueof{/tikz/p42 tint}] (-p42) {};},
+      mark=at position 55mm with {\node [ribosome binding site] (-r4) {};},
+      mark=at position 57mm with {\node [coding sequence, gD, fill=\pgfkeysvalueof{/tikz/D fill}, g label=\pgfkeysvalueof{/tikz/D label}] (-gD) {};},
+      mark=at position 64mm with {\node [terminator] (-t4) {};},
+      mark=at position 66mm with {\node [promoter, color D!\pgfkeysvalueof{/tikz/p5 tint}] (-p5) {};},
+      mark=at position 68mm with {\node [ribosome binding site] (-r5) {};},
+      mark=at position 70mm with {\node [coding sequence, gO, fill=\pgfkeysvalueof{/tikz/O fill}, g label=\pgfkeysvalueof{/tikz/O label}] (-gO) {};},
+      mark=at position 77mm with {\node [terminator] (-t5) {};},
+    }
+    ] (0,0) -- ++(79mm,0); 
+  },
+  A fill/.initial={color A},
+  A label/.initial={A},
+  B fill/.initial={color B},
+  B label/.initial={B},
+  C fill/.initial={color C},
+  C label/.initial={C},
+  D fill/.initial={color D},
+  D label/.initial={D},
+  O fill/.initial={black},
+  O label/.initial={Out},
+  p11 tint/.initial=100,
+  p12 tint/.initial=100,
+  p21 tint/.initial=100,
+  p22 tint/.initial=100,
+  p31 tint/.initial=100,
+  p32 tint/.initial=100,
+  p41 tint/.initial=100,
+  p42 tint/.initial=100,
+  p5 tint/.initial=100,
+  p1 label/.initial=,
+  p2 label/.initial=,
+}
+
+\def\ot{40}
 
 \begin{figure}[h]
   \centering
@@ -82,128 +105,6 @@
     gO/.style={
       black,
       fill=black,
-    },
-    g label/.style={label={[white]center:\footnotesize\it {#1}}},
-    p label/.style={label={[anchor=base, yshift=-8pt]below:\scriptsize {#1}}},
-    circuit A/.style={
-      postaction={decorate},
-      decoration={
-        markings,
-        mark=at position 2mm with  {\node [promoter, black!40] (A-p11) {};},
-        mark=at position 5mm with  {\node [promoter, black!40] (A-p12) {};},
-        mark=at position 7mm with  {\node [ribosome binding site] (A-r1) {};},
-        mark=at position 9mm with  {\node [coding sequence, gA, fill=white] (A-gA) {};},
-        mark=at position 16mm with {\node [terminator] (A-t1) {};},
-        mark=at position 18mm with {\node [promoter, black!40] (A-p21) {};},
-        mark=at position 21mm with {\node [promoter, color A] (A-p22) {};},
-        mark=at position 23mm with {\node [ribosome binding site] (A-r2) {};},
-        mark=at position 25mm with {\node [coding sequence, gB, g label={B}] (A-gB) {};},
-        mark=at position 32mm with {\node [terminator] (A-t2) {};},
-        mark=at position 34mm with {\node [promoter, black!40] (A-p31) {};},
-        mark=at position 37mm with {\node [promoter, color A] (A-p32) {};},
-        mark=at position 39mm with {\node [ribosome binding site] (A-r3) {};},
-        mark=at position 41mm with {\node [coding sequence, gC, g label={C}] (A-gC) {};},
-        mark=at position 48mm with {\node [terminator] (A-t3) {};},
-        mark=at position 50mm with {\node [promoter, color B!40] (A-p41) {};},
-        mark=at position 53mm with {\node [promoter, color C!40] (A-p42) {};},
-        mark=at position 55mm with {\node [ribosome binding site] (A-r4) {};},
-        mark=at position 57mm with {\node [coding sequence, gD, g label={D}] (A-gD) {};},
-        mark=at position 64mm with {\node [terminator] (A-t4) {};},
-        mark=at position 66mm with {\node [promoter, color D] (A-p5) {};},
-        mark=at position 68mm with {\node [ribosome binding site] (A-r5) {};},
-        mark=at position 70mm with {\node [coding sequence, gO, g label={Out}] (A-gO) {};},
-        mark=at position 77mm with {\node [terminator] (A-t5) {};},
-      }
-    },
-    circuit B/.style={
-      postaction={decorate},
-      decoration={
-        markings,
-        mark=at position 2mm with  {\node [promoter, black, p label={p1}] (B-p11) {};},
-        mark=at position 5mm with  {\node [promoter, black!40] (B-p12) {};},
-        mark=at position 7mm with  {\node [ribosome binding site] (B-r1) {};},
-        mark=at position 9mm with  {\node [coding sequence, gA, g label={A}] (B-gA) {};},
-        mark=at position 16mm with {\node [terminator] (B-t1) {};},
-        mark=at position 18mm with {\node [promoter, black!40] (B-p21) {};},
-        mark=at position 21mm with {\node [promoter, color A!40] (B-p22) {};},
-        mark=at position 23mm with {\node [ribosome binding site] (B-r2) {};},
-        mark=at position 25mm with {\node [coding sequence, gB, fill=white] (B-gB) {};},
-        mark=at position 32mm with {\node [terminator] (B-t2) {};},
-        mark=at position 34mm with {\node [promoter, black, p label={p1}] (B-p31) {};},
-        mark=at position 37mm with {\node [promoter, color A!40] (B-p32) {};},
-        mark=at position 39mm with {\node [ribosome binding site] (B-r3) {};},
-        mark=at position 41mm with {\node [coding sequence, gC, g label={C}] (B-gC) {};},
-        mark=at position 48mm with {\node [terminator] (B-t3) {};},
-        mark=at position 50mm with {\node [promoter, color B] (B-p41) {};},
-        mark=at position 53mm with {\node [promoter, color C!40] (B-p42) {};},
-        mark=at position 55mm with {\node [ribosome binding site] (B-r4) {};},
-        mark=at position 57mm with {\node [coding sequence, gD, g label={D}] (B-gD) {};},
-        mark=at position 64mm with {\node [terminator] (B-t4) {};},
-        mark=at position 66mm with {\node [promoter, color D!40] (B-p5) {};},
-        mark=at position 68mm with {\node [ribosome binding site] (B-r5) {};},
-        mark=at position 70mm with {\node [coding sequence, gO, fill=white] (B-gO) {};},
-        mark=at position 77mm with {\node [terminator] (B-t5) {};},
-      }
-    },
-    circuit C/.style={
-      postaction={decorate},
-      decoration={
-        markings,
-        mark=at position 2mm with  {\node [promoter, black!40] (C-p11) {};},
-        mark=at position 5mm with  {\node [promoter, black, p label={p2}] (C-p12) {};},
-        mark=at position 7mm with  {\node [ribosome binding site] (C-r1) {};},
-        mark=at position 9mm with  {\node [coding sequence, gA, g label={A}] (C-gA) {};},
-        mark=at position 16mm with {\node [terminator] (C-t1) {};},
-        mark=at position 18mm with {\node [promoter, black, p label={p2}] (C-p21) {};},
-        mark=at position 21mm with {\node [promoter, color A!40] (C-p22) {};},
-        mark=at position 23mm with {\node [ribosome binding site] (C-r2) {};},
-        mark=at position 25mm with {\node [coding sequence, gB, g label={B}] (C-gB) {};},
-        mark=at position 32mm with {\node [terminator] (C-t2) {};},
-        mark=at position 34mm with {\node [promoter, black!40] (C-p31) {};},
-        mark=at position 37mm with {\node [promoter, color A!40] (C-p32) {};},
-        mark=at position 39mm with {\node [ribosome binding site] (C-r3) {};},
-        mark=at position 41mm with {\node [coding sequence, gC, fill=white] (C-gC) {};},
-        mark=at position 48mm with {\node [terminator] (C-t3) {};},
-        mark=at position 50mm with {\node [promoter, color B!40] (C-p41) {};},
-        mark=at position 53mm with {\node [promoter, color C] (C-p42) {};},
-        mark=at position 55mm with {\node [ribosome binding site] (C-r4) {};},
-        mark=at position 57mm with {\node [coding sequence, gD, g label={D}] (C-gD) {};},
-        mark=at position 64mm with {\node [terminator] (C-t4) {};},
-        mark=at position 66mm with {\node [promoter, color D!40] (C-p5) {};},
-        mark=at position 68mm with {\node [ribosome binding site] (C-r5) {};},
-        mark=at position 70mm with {\node [coding sequence, gO, fill=white] (C-gO) {};},
-        mark=at position 77mm with {\node [terminator] (C-t5) {};},
-      }
-    },
-    circuit D/.style={
-      postaction={decorate},
-      decoration={
-        markings,
-        mark=at position 2mm with  {\node [promoter, black, p label={p1}] (D-p11) {};},
-        mark=at position 5mm with  {\node [promoter, black, p label={p2}] (D-p12) {};},
-        mark=at position 7mm with  {\node [ribosome binding site] (D-r1) {};},
-        mark=at position 9mm with  {\node [coding sequence, gA, g label={A}] (D-gA) {};},
-        mark=at position 16mm with {\node [terminator] (D-t1) {};},
-        mark=at position 18mm with {\node [promoter, black, p label={p2}] (D-p21) {};},
-        mark=at position 21mm with {\node [promoter, color A!40] (D-p22) {};},
-        mark=at position 23mm with {\node [ribosome binding site] (D-r2) {};},
-        mark=at position 25mm with {\node [coding sequence, gB, g label={B}] (D-gB) {};},
-        mark=at position 32mm with {\node [terminator] (D-t2) {};},
-        mark=at position 34mm with {\node [promoter, black, p label={p1}] (D-p31) {};},
-        mark=at position 37mm with {\node [promoter, color A!40] (D-p32) {};},
-        mark=at position 39mm with {\node [ribosome binding site] (D-r3) {};},
-        mark=at position 41mm with {\node [coding sequence, gC, g label={C}] (D-gC) {};},
-        mark=at position 48mm with {\node [terminator] (D-t3) {};},
-        mark=at position 50mm with {\node [promoter, color B!40] (D-p41) {};},
-        mark=at position 53mm with {\node [promoter, color C!40] (D-p42) {};},
-        mark=at position 55mm with {\node [ribosome binding site] (D-r4) {};},
-        mark=at position 57mm with {\node [coding sequence, gD, fill=white] (D-gD) {};},
-        mark=at position 64mm with {\node [terminator] (D-t4) {};},
-        mark=at position 66mm with {\node [promoter, color D] (D-p5) {};},
-        mark=at position 68mm with {\node [ribosome binding site] (D-r5) {};},
-        mark=at position 70mm with {\node [coding sequence, gO, g label={Out}] (D-gO) {};},
-        mark=at position 77mm with {\node [terminator] (D-t5) {};},
-      }
     },
     ]
     \renewcommand*\familydefault{\sfdefault}
@@ -236,11 +137,10 @@
       \coordinate (C) at (axis cs:1,2);
       \coordinate (D) at (axis cs:1,1);
     \end{semilogxaxis}
-
-    \draw [circuit A] ([yshift=-1mm]A) -- ++(79mm,0);
-    \draw [circuit B] ([yshift=-1mm]B) -- ++(79mm,0);
-    \draw [circuit C] ([yshift=-1mm]C) -- ++(79mm,0);
-    \draw [circuit D] ([yshift=-1mm]D) -- ++(79mm,0);
+    \pic [at={([yshift=-1mm]A)}, A fill=white, A label=, p11 tint=\ot, p12 tint=\ot, p21 tint=\ot, p31 tint=\ot, p41 tint=\ot, p42 tint=\ot] (A) {circuit};
+    \pic [at={([yshift=-1mm]B)}, B fill=white, B label=, O fill=white, O label=, p12 tint=\ot, p21 tint=\ot, p22 tint=\ot, p32 tint=\ot, p42 tint=\ot, p5 tint=\ot, p1 label={p1}] (B) {circuit};
+    \pic [at={([yshift=-1mm]C)}, C fill=white, C label=, O fill=white, O label=, p11 tint=\ot, p22 tint=\ot, p31 tint=\ot, p32 tint=\ot, p41 tint=\ot, p5 tint=\ot, p2 label={p2}] (C) {circuit};
+    \pic [at={([yshift=-1mm]D)}, D fill=white, D label=, p22 tint=\ot, p32 tint=\ot, p41 tint=\ot, p42 tint=\ot, p1 label={p1}, p2 label={p2}] (D) {circuit};
     % A
     \draw [repression, color B] (A-gB.north) -- ++(0,12pt) -| (A-p41.crown);
     \draw [repression, color C] (A-gC.north) -- ++(0,9pt) -| (A-p42.crown);

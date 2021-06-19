@@ -23,13 +23,6 @@
 \begin{document}
 \sansmath
 
-% Plot styles
-\tikzset{
-  plot/.style={draw=black, line width=1pt},
-  on/.style={plot, fill=black},
-  off/.style={plot},
-}
-
 % pic
 \tikzset{
   g label/.style={label={[white]center:\footnotesize\it {#1}}},
@@ -42,26 +35,26 @@
       mark=at position 2mm with  {\node [promoter, black!\pgfkeysvalueof{/tikz/p11 tint}, p label=\pgfkeysvalueof{/tikz/p1 label}] (-p11) {};},
       mark=at position 5mm with  {\node [promoter, black!\pgfkeysvalueof{/tikz/p12 tint}, p label=\pgfkeysvalueof{/tikz/p2 label}] (-p12) {};},
       mark=at position 7mm with  {\node [ribosome binding site] (-r1) {};},
-      mark=at position 9mm with  {\node [coding sequence, gA, fill=\pgfkeysvalueof{/tikz/A fill}, g label=\pgfkeysvalueof{/tikz/A label}] (-gA) {};},
+      mark=at position 9mm with  {\node [coding sequence, color A, fill=\pgfkeysvalueof{/tikz/A fill}, g label=\pgfkeysvalueof{/tikz/A label}] (-gA) {};},
       mark=at position 16mm with {\node [terminator] (-t1) {};},
       mark=at position 18mm with {\node [promoter, black!\pgfkeysvalueof{/tikz/p21 tint}, p label=\pgfkeysvalueof{/tikz/p2 label}] (-p21) {};},
       mark=at position 21mm with {\node [promoter, color A!\pgfkeysvalueof{/tikz/p22 tint}] (-p22) {};},
       mark=at position 23mm with {\node [ribosome binding site] (-r2) {};},
-      mark=at position 25mm with {\node [coding sequence, gB, fill=\pgfkeysvalueof{/tikz/B fill}, g label=\pgfkeysvalueof{/tikz/B label}] (-gB) {};},
+      mark=at position 25mm with {\node [coding sequence, color B, fill=\pgfkeysvalueof{/tikz/B fill}, g label=\pgfkeysvalueof{/tikz/B label}] (-gB) {};},
       mark=at position 32mm with {\node [terminator] (-t2) {};},
       mark=at position 34mm with {\node [promoter, black!\pgfkeysvalueof{/tikz/p31 tint}, p label=\pgfkeysvalueof{/tikz/p1 label}] (-p31) {};},
       mark=at position 37mm with {\node [promoter, color A!\pgfkeysvalueof{/tikz/p32 tint}] (-p32) {};},
       mark=at position 39mm with {\node [ribosome binding site] (-r3) {};},
-      mark=at position 41mm with {\node [coding sequence, gC, fill=\pgfkeysvalueof{/tikz/C fill}, g label=\pgfkeysvalueof{/tikz/C label}] (-gC) {};},
+      mark=at position 41mm with {\node [coding sequence, color C, fill=\pgfkeysvalueof{/tikz/C fill}, g label=\pgfkeysvalueof{/tikz/C label}] (-gC) {};},
       mark=at position 48mm with {\node [terminator] (-t3) {};},
       mark=at position 50mm with {\node [promoter, color B!\pgfkeysvalueof{/tikz/p41 tint}] (-p41) {};},
       mark=at position 53mm with {\node [promoter, color C!\pgfkeysvalueof{/tikz/p42 tint}] (-p42) {};},
       mark=at position 55mm with {\node [ribosome binding site] (-r4) {};},
-      mark=at position 57mm with {\node [coding sequence, gD, fill=\pgfkeysvalueof{/tikz/D fill}, g label=\pgfkeysvalueof{/tikz/D label}] (-gD) {};},
+      mark=at position 57mm with {\node [coding sequence, color D, fill=\pgfkeysvalueof{/tikz/D fill}, g label=\pgfkeysvalueof{/tikz/D label}] (-gD) {};},
       mark=at position 64mm with {\node [terminator] (-t4) {};},
       mark=at position 66mm with {\node [promoter, color D!\pgfkeysvalueof{/tikz/p5 tint}] (-p5) {};},
       mark=at position 68mm with {\node [ribosome binding site] (-r5) {};},
-      mark=at position 70mm with {\node [coding sequence, gO, fill=\pgfkeysvalueof{/tikz/O fill}, g label=\pgfkeysvalueof{/tikz/O label}] (-gO) {};},
+      mark=at position 70mm with {\node [coding sequence, black, fill=\pgfkeysvalueof{/tikz/O fill}, g label=\pgfkeysvalueof{/tikz/O label}] (-gO) {};},
       mark=at position 77mm with {\node [terminator] (-t5) {};},
     }
     ] (0,0) -- ++(79mm,0); 
@@ -98,14 +91,7 @@
     remember picture,
     line width=1pt,
     repression/.style={->, >=Bar, shorten <=2pt},
-    gA/.style={color A, fill=color A},
-    gB/.style={color B, fill=color B},
-    gC/.style={color C, fill=color C},
-    gD/.style={color D, fill=color D},
-    gO/.style={
-      black,
-      fill=black,
-    },
+    plot/.style={draw=black, line width=1pt},
     ]
     \renewcommand*\familydefault{\sfdefault}
     \begin{semilogxaxis}[
@@ -130,8 +116,8 @@
       xlabel={Output (RPU)},
       ylabel={Input}
       ]
-      \addplot [xbar, on] coordinates {(0.6, 1) (0.6, 4)};
-      \addplot [xbar, off] coordinates {(0.0025, 2) (0.004, 3)};
+      \addplot [xbar, plot, fill=black] coordinates {(0.6, 1) (0.6, 4)};
+      \addplot [xbar, plot] coordinates {(0.0025, 2) (0.004, 3)};
       \coordinate (A) at (axis cs:1,4);
       \coordinate (B) at (axis cs:1,3);
       \coordinate (C) at (axis cs:1,2);

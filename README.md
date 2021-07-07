@@ -37,6 +37,7 @@ to Martin Scharrer for tikz-timing and his numerous contributions to the
 LaTeX community.
 
 Parts of the `shapes.dna` library are modified versions (not replacements)
-of shapes provided in Ti*k*Z by Till Tantau. These are also Derived Works.
-Ti*k*Z is available at <https://www.ctan.org/pkg/pgf>.
+of shapes provided in Ti*k*Z by Till Tantau. Ti*k*Z is available at <https://www.ctan.org/pkg/pgf>.
 
+The `dna` library copies a portion parsing mechanism of PGFPlots by Christian
+Feuersänger. PGFPlots is available at <https://ctan.org/pkg/pgfplots>.

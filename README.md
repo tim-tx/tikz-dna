@@ -4,6 +4,16 @@ This is a LaTeX package for drawing genetic construct pictograms using
 [Ti*k*Z](https://www.ctan.org/pkg/pgf). **Under development, there are
 no reusable macros at the moment.**
 
+We provide a Ti*k*Z library called `dna` that installs one core macro,
+`\dnaplot`.
+```latex
+\usetikzlibrary{dna}
+\begin{tikzpicture}
+  \dnaplot [] features {promoter [name=p1], coding sequence [name=gA], terminator, promoter [name=p2], coding sequence [name=gB], terminator};
+  \dnaplot [] regulation {gB -> p1 [anchor=120], gA -> p2};
+\end{tikzpicture}
+```
+
 # Gallery
 
 ![Example plot](example.png "Example plot")

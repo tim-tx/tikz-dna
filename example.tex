@@ -106,7 +106,6 @@
       xmax=2.5,
       xtick={0.001,0.01,0.1,1},
       xticklabels={\empty, $10^{-2}$, $10^{-1}$, $10^{0}$},
-      xticklabel style={},
       xlabel style={font=\sf},
       ylabel style={font=\sf},
       ytick={4,...,1},
@@ -145,6 +144,9 @@
     \draw [repression, color A, shorten <=0pt] (D-gA r1 -| D-p22.crown) -- (D-p22.crown);
     \draw [repression, color B] (D-gB.north) -- ++(0,12pt) -| (D-p41.crown);
     \draw [repression, color C] (D-gC.north) -- ++(0,9pt) -| (D-p42.crown);
+    \begin{tikzdna}
+      \addfeature [foo] {};
+    \end{tikzdna}
   \end{tikzpicture}
   \caption{This is an example plot of an \textsf{XNOR} genetic circuit. The {\protect\mycap} genes are repressed.}
   \label{fig:fig}

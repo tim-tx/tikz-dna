@@ -59,3 +59,45 @@
   },
   line cap=rect,
 }
+
+\def\tikzdna@dnaplot{%
+  \pgfutil@ifnextchar[{%
+    \tikzdna@dnaplot@%
+  }{%
+    \tikzdna@dnaplot@[]%
+  }%
+}
+
+\def\tikzdna@dnaplot@[#1]{%
+}
+
+\def\tikzdna@install@abbrev@commands{%
+  \let\dnaplot=\tikzdna@dnaplot%
+}
+
+\def\tikzdna@environment@opt[#1]{%
+  \begingroup%
+  \tikzdna@install@abbrev@commands%
+}
+\def\endtikzdna@environment@opt{%
+  \endgroup%
+}
+
+\def\tikzdna@environment@tikzdna{%
+  \pgfutil@ifnextchar[{\tikzdna@@environment@tikzdna}{\tikzdna@@environment@tikzdna[]}%
+}
+\def\endtikzdna@environment@tikzdna{\endtikzdna@environment@opt}
+\def\tikzdna@@environment@tikzdna[#1]{%
+  \tikzdna@environment@opt[#1]%
+}
+
+\pgfutil@IfUndefined{tikzaddtikzonlycommandshortcutlet}{%
+  \def\tikzaddtikzonlycommandshortcutlet#1#2{%
+    \expandafter\def\expandafter\tikz@installcommands\expandafter{\tikz@installcommands%
+      \let#1=#2%
+    }%
+  }%
+}{}
+
+\tikzaddtikzonlycommandshortcutlet\tikzdna\tikzdna@environment@tikzdna%
+\tikzaddtikzonlycommandshortcutlet\endtikzdna\endtikzdna@environment@tikzdna%

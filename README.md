@@ -26,18 +26,9 @@ from dnaplotlib. The image above was drawn entirely in Ti*k*Z.
 This package is under development and provided under the LaTeX Project
 Public License version 1.3c. A copy of the license can be found in `LICENSE`.
 
-Part of this package (the contents of the `shorthand/` folder) was built
-by reverse-engineering tikz-timing, a package by Martin Sharrer for drawing
-timing diagrams of clocked electrical circuits with Ti*k*Z. Under the terms
-of the LaTeX Project Public License version 1.3c, the licence under which
-tikz-timing is released, tikz-dna is considered a Derived Work that is
-not intended as a replacement of the original Work (tikz-timing). You can
-obtain tikz-timing on CTAN at <https://ctan.org/pkg/tikz-timing>. Thanks
-to Martin Scharrer for tikz-timing and his numerous contributions to the
-LaTeX community.
-
-Parts of the `shapes.dna` library are modified versions (not replacements)
-of shapes provided in Ti*k*Z by Till Tantau. Ti*k*Z is available at <https://www.ctan.org/pkg/pgf>.
-
-The `dna` library copies a portion parsing mechanism of PGFPlots by Christian
-Feuersänger. PGFPlots is available at <https://ctan.org/pkg/pgfplots>.
+Certain components of this package were built by reverse-engineering the
+Ti*k*Z `graphs` and `shapes.arrows` libraries. Under the terms of the Ti*k*Z
+license (the LaTeX Project Public License version 1.3c), these reverse-engineered
+components can be considered Derived Works not intended as replacements
+of the original Work. Ti*k*Z was created by Till Tantau and is available
+at <https://www.ctan.org/pkg/pgf>.

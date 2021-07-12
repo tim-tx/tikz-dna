@@ -136,13 +136,49 @@
 }%
 
 \def\tikzdna@dnaplot@features@main@parser#1,{%
-  \tikzdna@dnaplot@features@parse@one#1\pgf@stop@feature%
+  \tikzdna@dnaplot@features@grab@feature@type#1\pgf@stop\pgf@stop@eofeature%
+  % \tikz@lib@graph@stored@actions%
+  \pgfutil@ifnextchar\pgf@stop@eofeature{%
+    \tikzdna@dnaplot@features@feature@done%
+  }{%
+    % FIXME
+  }
 }%
 
-\def\tikzdna@dnaplot@features@parse@one{%
+\def\tikzdna@dnaplot@features@grab@feature@type{%
+  % FIXME implement foreach
+  % \pgfutil@ifnextchar\foreach\tikzdna@dnaplot@features@do@foreach\tikzdna@dnaplot@features@parse@type@text%
+  \tikzdna@dnaplot@features@parse@type@text%
+}
+
+%
+% Get the type of the feature
+%
+\def\tikzdna@dnaplot@features@parse@type@text#1\pgf@stop{%
+  \tikzdna@dnaplot@features@parse@normal@feature#1[\pgf@stop%
+}%
+
+\def\tikzdna@dnaplot@features@parse@normal@feature#1[{
+  \edef\pgf@marshal{\noexpand\pgfkeys@spdef\noexpand\tikzdna@dnaplot@features@type@only{#1}}%
+  \pgf@marshal%
+  \let\tikz@lib@graph@node@text\tikzdna@dnaplot@features@type@only%
+  \edef\tikz@lib@graph@name{\tikz@lib@graph@path\tikzdna@dnaplot@features@type@only}%
+  \tikzdna@dnaplot@features@handle@feature@cont%
+}
+
+%
+% We have now parsed everything up to the opening "[". We continue
+%
+\def\tikzdna@dnaplot@features@handle@feature@cont{%
+  % FIXME
+}
+
+\def\tikzdna@dnaplot@features@feature@done\pgf@stop@eofeature{%
+  % FIXME
 }%
 
 \def\tikzdna@dnaplot@main@done{%
+  % FIXME
 }%
 
 \def\tikzdna@dnaplot@regulation regulation{%

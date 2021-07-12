@@ -81,53 +81,27 @@
 }%
 
 \def\tikzdna@dnaplot@features@[#1]{%
+  % FIXME set options with #1
   \tikzdna@dnaplot@features@normal@main%
 }%
 
-\long\def\tikzdna@dnaplot@features@normal@main#1{%
+\def\tikzdna@dnaplot@features@normal@main#1{%
   \tikzdna@dnaplot@features@parse@group{#1}%
   \tikzdna@dnaplot@main@done%
 }%
 
-\long\def\tikzdna@dnaplot@features@parse@group#1{%
-  \let\tikzdna@dnaplot@features@group@c\pgfutil@empty%
+\def\tikzdna@dnaplot@features@parse@group#1{%
   \let\tikzdna@dnaplot@features@group@cont\pgfutil@empty%
   \let\tikzdna@dnaplot@features@group@conta\pgfutil@empty%
-  \tikzdna@dnaplot@features@group@check#1\par\pgf@stop@eogroup%
+  \tikzdna@dnaplot@features@encloser#1[\pgf@stop@eogroup%
 }%
-
-\def\tikzdna@dnaplot@features@group@check{%
-  \pgfutil@ifnextchar[\tikzdna@dnaplot@features@group@opt{\tikzdna@dnaplot@features@group@opt[]}%
-}%
-
-\def\tikzdna@dnaplot@features@group@opt[#1]{%
-  \let\tikzdna@dnaplot@features@parse@extras\pgfutil@empty%
-  \expandafter\tikzdna@dnaplot@features@par\tikzdna@dnaplot@features@parse@extras
-}%
-
-\def\tikzdna@dnaplot@features@par{%
-  \pgfutil@ifnextchar\bgroup{\tikzdna@dnaplot@features@par@@}{\tikzdna@dnaplot@features@par@}%
-}%
-
-\long\def\tikzdna@dnaplot@features@par@#1\par{%
-  \pgfutil@ifnextchar\pgf@stop@eogroup{%
-    \expandafter\tikzdna@dnaplot@features@encloser\tikzdna@dnaplot@features@group@c#1[}{%
-    \expandafter\def\expandafter\tikzdna@dnaplot@features@group@c\expandafter{\tikzdna@dnaplot@features@group@c#1}%
-    \tikzdna@dnaplot@features@par%
-  }%
-}%
-
-\long\def\tikzdna@dnaplot@features@par@@#1{%
-  \expandafter\def\expandafter\tikzdna@dnaplot@features@group@c\expandafter{\tikzdna@dnaplot@features@group@c{#1}}%
-  \tikzdna@dnaplot@features@par
-}%
-
 
 %
 % Replace ...[...]... by ...[{...}]...
 %
+
 \def\tikzdna@dnaplot@features@encloser{%
-  \pgfutil@ifnextchar\bgroup{\tikzdna@dnaplot@features@encloser@@}{\tikzdna@dnaplot@features@encloser@}%
+  \tikzdna@dnaplot@features@encloser@%
 }%
 
 \def\tikzdna@dnaplot@features@encloser@#1[{%
@@ -146,16 +120,11 @@
     \tikzdna@dnaplot@features@encloser@cont}%
 }%
 
-\def\tikzdna@dnaplot@features@encloser@@#1{%
-  \expandafter\def\expandafter\tikzdna@dnaplot@features@group@cont\expandafter{\tikzdna@dnaplot@features@group@cont{#1}}%
-  \tikzdna@dnaplot@features@encloser%
-}%
-
 %
 % Replace ; by ,
 %
 \def\tikzdna@dnaplot@features@semi{%
-  \pgfutil@ifnextchar\bgroup{\tikzdna@dnaplot@features@semi@@}{\tikzdna@dnaplot@features@semi@}%
+  \tikzdna@dnaplot@features@semi@%
 }%
 
 \def\tikzdna@dnaplot@features@semi@#1;{%
@@ -166,27 +135,11 @@
   }%
 }%
 
-\def\tikzdna@dnaplot@features@semi@@#1{%
-  \expandafter\def\expandafter\tikzdna@dnaplot@features@group@conta\expandafter{\tikzdna@dnaplot@features@group@conta{#1}}%
-  \tikzdna@dnaplot@features@semi%
-}%
-
-\def\tikzdna@dnaplot@features@main@parser{%
-  \pgfutil@ifnextchar\bgroup{\tikzdna@dnaplot@features@protect@group}{\tikzdna@dnaplot@features@main@parser@cont}%
-}%
-
-\def\tikzdna@dnaplot@features@protect@group#1{% skip space
-  \pgfutil@ifnextchar\relax{\tikzdna@dnaplot@features@main@parser@cont{{#1}}}{\tikzdna@dnaplot@features@main@parser@cont{{#1}}}%
-}%
-
-\def\tikzdna@dnaplot@features@main@parser@cont{\tikzdna@dnaplot@features@main@parser@cont@normal}%
-
-\def\tikzdna@dnaplot@features@main@parser@cont@normal#1,{%
-  \tikzdna@dnaplot@features@parse@one#1-\pgf@stop@eodashes%
+\def\tikzdna@dnaplot@features@main@parser#1,{%
+  \tikzdna@dnaplot@features@parse@one#1\pgf@stop@feature%
 }%
 
 \def\tikzdna@dnaplot@features@parse@one{%
-  \pgfutil@ifnextchar\bgroup\tikzdna@dnaplot@features@scope\tikzdna@dnaplot@features@node%
 }%
 
 \def\tikzdna@dnaplot@main@done{%

@@ -60,8 +60,10 @@
   line cap=rect,
 }%
 
+% Most of the below is adapted from tikzlibrarygraphs.code.tex
+
 \def\tikzdna@dnaplot{%
-  \pgfutil@ifnextchar[{\tikzdna@dnaplot@}{\tikzdna@dnaplot@[]}
+  \pgfutil@ifnextchar[{\tikzdna@dnaplot@}{\tikzdna@dnaplot@[]}%
 }%
 
 % #1: \dnaplot [...]
@@ -80,6 +82,7 @@
   \pgfutil@ifnextchar[{\tikzdna@dnaplot@features@}{\tikzdna@dnaplot@features@[]}%
 }%
 
+% #1: \dnaplot features [...]
 \def\tikzdna@dnaplot@features@[#1]{%
   % FIXME set options with #1
   \tikzdna@dnaplot@features@normal@main%
@@ -99,7 +102,6 @@
 %
 % Replace ...[...]... by ...[{...}]...
 %
-
 \def\tikzdna@dnaplot@features@encloser{%
   \tikzdna@dnaplot@features@encloser@%
 }%
@@ -142,7 +144,7 @@
     \tikzdna@dnaplot@features@feature@done%
   }{%
     % FIXME
-  }
+  }%
 }%
 
 \def\tikzdna@dnaplot@features@grab@feature@type{%
@@ -158,27 +160,60 @@
   \tikzdna@dnaplot@features@parse@normal@feature#1[\pgf@stop%
 }%
 
-\def\tikzdna@dnaplot@features@parse@normal@feature#1[{
+\def\tikzdna@dnaplot@features@parse@normal@feature#1[{%
   \edef\pgf@marshal{\noexpand\pgfkeys@spdef\noexpand\tikzdna@dnaplot@features@type@only{#1}}%
   \pgf@marshal%
-  \let\tikz@lib@graph@node@text\tikzdna@dnaplot@features@type@only%
-  \edef\tikz@lib@graph@name{\tikz@lib@graph@path\tikzdna@dnaplot@features@type@only}%
+  % previously saved node text here
+  \edef\tikzdna@dnaplot@features@feature@type{\tikz@lib@graph@path\tikzdna@dnaplot@features@type@only}%
   \tikzdna@dnaplot@features@handle@feature@cont%
 }
+
+\newif\iftikzgraphsautonumbernodes
+\newcount\tikzdna@dnaplot@auto@number
+
+\def\tikzdna@dnaplot@auto@sep{\space}%
+
+\tikzset{
+  /tikzdna/.cd,%
+}%
+
+\def\tikzdna@dnaplot@features@do@autonumber{%
+  % FIXME do not overwrite \tikzdna@dnaplot@features@type@only here
+  % do we even need this
+  \ifx\tikzdna@dnaplot@features@type@only\pgfutil@empty%
+  \else%
+    \edef\tikzdna@dnaplot@features@type@only{\tikz@lib@graph@name@only\tikzdna@dnaplot@auto@sep\the\tikzdna@dnaplot@auto@number}%
+    \global\advance\tikzdna@dnaplot@auto@number by1\relax%
+  \fi%
+}%
 
 %
 % We have now parsed everything up to the opening "[". We continue
 %
 \def\tikzdna@dnaplot@features@handle@feature@cont{%
-  % FIXME
-}
+  % TODO
+  \iftikzgraphsautonumbernodes%
+    \tikz@lib@do@autonumber%
+  \fi%
+  \iftikz@lib@graph@fresh@node%
+    \tikz@lg@if@local@node{\tikz@lib@graph@name}{\tikz@lg@find@fresh@name}{}%
+  \fi%
+  \let\tikzgraphnodeas\tikzgraphnodeas@default%
+  \pgfutil@ifnextchar\pgf@stop{%
+    \ifx\tikz@lib@graph@name@only\pgfutil@empty%
+      \expandafter\tikz@lib@graph@node@empty@done%
+    \else
+      \expandafter\tikz@lib@graph@node@opt\expandafter[\expandafter]\expandafter[%
+    \fi%
+  }{\tikz@lib@graph@node@opt[}%
+}%
 
 \def\tikzdna@dnaplot@features@feature@done\pgf@stop@eofeature{%
-  % FIXME
+  % TODO
 }%
 
 \def\tikzdna@dnaplot@main@done{%
-  % FIXME
+  % TODO
 }%
 
 \def\tikzdna@dnaplot@regulation regulation{%

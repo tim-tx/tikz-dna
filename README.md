@@ -9,8 +9,14 @@ We provide a Ti*k*Z library called `dna` that installs one core macro,
 ```latex
 \usetikzlibrary{dna}
 \begin{tikzpicture}
-  \dnaplot [] features {promoter [name=p1], coding sequence [name=gA], terminator, promoter [name=p2], coding sequence [name=gB], terminator};
-  \dnaplot [] regulation {gB -> p1 [anchor=120], gA -> p2};
+  \node (dox) at (0,1) {dox};
+  \dnaplot [] features {promoter        [name=p1],
+                        coding sequence [name=gA],
+                        terminator,
+                        promoter        [name=p2],
+                        coding sequence [name=gB],
+                        terminator};
+  \dnaplot [] regulation {dox -| {gB -| p1, gA -| p2}};
 \end{tikzpicture}
 ```
 
@@ -19,7 +25,8 @@ We provide a Ti*k*Z library called `dna` that installs one core macro,
 ![Example plot](example.png "Example plot")
 
 Compare this image with [this gallery entry](https://github.com/VoigtLab/dnaplotlib/tree/master/gallery/xnor_truthtable)
-from dnaplotlib. The image above was drawn entirely in Ti*k*Z.
+from dnaplotlib. The image above was drawn entirely in Ti*k*Z, the source
+is in [example.tex](example.tex).
 
 # License
 

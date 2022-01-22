@@ -67,6 +67,7 @@
 }%
 
 % #1: \dnaplot [...]
+% FIXME do something with #1
 \def\tikzdna@dnaplot@[#1]{%
   \pgfutil@ifnextchar f{\tikzdna@dnaplot@features}{%
     \pgfutil@ifnextchar r{\tikzdna@dnaplot@regulation}{%

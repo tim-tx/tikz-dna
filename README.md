@@ -10,13 +10,20 @@ We provide a Ti*k*Z library called `dna` that installs one core macro,
 \usetikzlibrary{dna}
 \begin{tikzpicture}
   \node (dox) at (0,1) {dox};
-  \dnaplot [] features {promoter        [name=p1],
-                        coding sequence [name=gA],
-                        terminator,
-                        promoter        [name=p2],
-                        coding sequence [name=gB],
-                        terminator};
-  \dnaplot [] regulation {dox -| {gB -| p1, gA -| p2}};
+  \dnaplot []
+    features
+    { [name=segment 1] {
+        promoter        [name=p1],
+        coding sequence [name=gA],
+        terminator
+      },
+      [anchor=north west, right=1cm of segment 1.base east] {
+        promoter        [name=p2],
+        coding sequence [name=gB],
+        terminator
+      }
+    }
+    regulation { (dox) -| {gB -| p1, gA -| p2} };
 \end{tikzpicture}
 ```
 
